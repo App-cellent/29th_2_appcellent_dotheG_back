@@ -12,10 +12,12 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final StepService stepService;
 
-    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder, StepService stepService) {
         this.memberRepository = memberRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.stepService = stepService;
     }
 
     public void SignUp(MemberDto memberDto) {
@@ -33,6 +35,10 @@ public class MemberService {
         Member member = new Member(userName, userLogin, bCryptPasswordEncoder.encode(userPassword), true, false, "ROLE_USER");
 
         memberRepository.save(member);
+
+        stepService.createStep(member);
     }
+
+
 
 }

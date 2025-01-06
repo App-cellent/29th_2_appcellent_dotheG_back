@@ -114,7 +114,8 @@ public class StepService {
                 return Response.fail("이미 지급 완료되었습니다.");
             }
             // 리워드 지급
-            MemberInfo memberInfo = memberInfoRepository.findByUserId(member);
+            Optional<MemberInfo> memberInfoOptional = memberInfoRepository.findByUserId(member);
+            MemberInfo memberInfo = memberInfoOptional.orElseThrow(()->new IllegalArgumentException("조회할 MemberInfo가 없습니다."));
             memberInfo.addReward(3);
             memberInfoRepository.save(memberInfo);
 

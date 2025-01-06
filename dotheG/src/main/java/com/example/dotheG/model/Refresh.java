@@ -4,11 +4,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Entity
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Refresh {
 
     @Id
@@ -24,8 +25,5 @@ public class Refresh {
         this.userLogin = userLogin;
         this.refresh = refresh;
         this.expiration = expiration;
-    }
-
-    protected Refresh() {
     }
 }

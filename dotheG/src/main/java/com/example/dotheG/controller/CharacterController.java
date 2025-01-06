@@ -20,7 +20,7 @@ public class CharacterController {
     @PostMapping("/draw/{userId}")
     public Response<DrawResponseDto> drawCharacter(@PathVariable("userId") Long userId, @RequestBody DrawDto drawDto) {
         DrawResponseDto responseDto = characterService.drawCharacter(drawDto, userId);
-        return Response.success("캐릭터 뽑기 완료", responseDto);
+        return Response.success("캐릭터 뽑기 성공", responseDto);
     }
 
     // 캐릭터 도감 조회
@@ -44,7 +44,7 @@ public class CharacterController {
     @PostMapping("/main/set")
     public Response<String> setMainCharacter(@RequestBody SetMainCharacterDto request) {
         String message = characterService.setMainCharacter(request.getUserId(), request.getCharacterId());
-        return Response.success(message, null);
+        return Response.success("대표 캐릭터 지정 성공", null);
     }
 
     // 대표 캐릭터 조회
