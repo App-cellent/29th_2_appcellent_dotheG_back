@@ -18,4 +18,8 @@ public class MemberInfo {
     private int userReward;
 
     private Long mainChar;
+
+    public void addReward(int reward) {
+        userReward += reward;
+    }
 }
