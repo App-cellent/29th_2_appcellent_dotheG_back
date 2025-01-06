@@ -1,12 +1,10 @@
 package com.example.dotheG.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
 public class MemberInfo {
@@ -23,4 +21,21 @@ public class MemberInfo {
     private int userReward;
 
     private Long mainChar;
+
+    public void addReward(int reward) {
+        userReward += reward;
+    }
+
+
+    // 대표 캐릭터 업데이트 메서드
+    public void updateMainChar(Long characterId) {
+        this.mainChar = characterId;
+    }
+
+    @Builder
+    public MemberInfo(Member userId) {
+        this.userId = userId;
+        this.userReward = 20;
+        this.mainChar = null;
+    }
 }
