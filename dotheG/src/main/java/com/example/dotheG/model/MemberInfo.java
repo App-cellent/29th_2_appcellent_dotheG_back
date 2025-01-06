@@ -1,8 +1,14 @@
 package com.example.dotheG.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class MemberInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,7 +19,6 @@ public class MemberInfo {
     @JoinColumn(name = "USER_ID")
     private Member userId;
 
-    // Todo : default value = 20
     @Column(columnDefinition = "integer default 20")
     private int userReward;
 
