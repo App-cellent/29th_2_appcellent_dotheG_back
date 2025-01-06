@@ -30,6 +30,12 @@ public class MemberInfo {
     // 대표 캐릭터 업데이트 메서드
     public void updateMainChar(Long characterId) {
         this.mainChar = characterId;
+    }
 
+    @Builder
+    public MemberInfo(Member userId) {
+        this.userId = userId;
+        this.userReward = 20;
+        this.mainChar = null;
     }
 }

@@ -59,7 +59,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/users/signup", "/login", "/").permitAll()
-                        //.requestMatchers("/test").hasRole("USER")
+                        .requestMatchers("/steps/test").hasRole("USER")
                         .requestMatchers("/users/reissue").permitAll()
                         .anyRequest().authenticated());
         http

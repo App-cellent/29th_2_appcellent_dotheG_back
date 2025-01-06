@@ -2,6 +2,8 @@ package com.example.dotheG.service;
 
 import com.example.dotheG.dto.MemberDto;
 import com.example.dotheG.model.Member;
+import com.example.dotheG.model.MemberInfo;
+import com.example.dotheG.repository.MemberInfoRepository;
 import com.example.dotheG.repository.MemberRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,11 +15,13 @@ public class MemberService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final StepService stepService;
+    private final MemberInfoRepository memberInfoRepository;
 
-    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder, StepService stepService) {
+    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder, StepService stepService, MemberInfoRepository memberInfoRepository) {
         this.memberRepository = memberRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.stepService = stepService;
+        this.memberInfoRepository = memberInfoRepository;
     }
 
     public void SignUp(MemberDto memberDto) {
@@ -36,7 +40,10 @@ public class MemberService {
 
         memberRepository.save(member);
 
+        MemberInfo memberInfo = new MemberInfo(member);
+        memberInfoRepository.save(memberInfo);
         stepService.createStep(member);
+
     }
 
 
