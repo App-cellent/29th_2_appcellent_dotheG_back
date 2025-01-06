@@ -1,10 +1,16 @@
 package com.example.dotheG.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,5 +21,6 @@ public class Quiz {
 
     private String quizAnswer;
 
+    @Column(length = 1000)
     private String quizSol;
 }
