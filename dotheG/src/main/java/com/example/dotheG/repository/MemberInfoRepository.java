@@ -9,3 +9,4 @@ import java.util.Optional;
 public interface MemberInfoRepository extends JpaRepository<MemberInfo, Long> {
     Optional<MemberInfo> findByUserId(Member userId);
 }
+
