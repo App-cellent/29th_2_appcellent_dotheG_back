@@ -1,5 +1,6 @@
 package com.example.dotheG.config;
 
+
 import com.example.dotheG.config.jwt.JwtFilter;
 import com.example.dotheG.config.jwt.LoginFilter;
 import com.example.dotheG.config.jwt.JwtUtil;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+
 
 @Configuration
 @EnableWebSecurity
