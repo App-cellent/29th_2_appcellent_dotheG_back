@@ -24,6 +24,9 @@ public class MemberInfo {
 
     private Long mainChar;
 
+    public void addReward(int reward) {
+        userReward += reward;
+
     protected MemberInfo() {}
 
     public MemberInfo(Long userInfoId, Member userId, int userReward,Long mainChar) {
@@ -52,5 +55,6 @@ public class MemberInfo {
     // 대표 캐릭터 업데이트 메서드
     public void updateMainChar(Long characterId) {
         this.mainChar = characterId;
+
     }
 }
