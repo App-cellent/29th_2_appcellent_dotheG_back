@@ -7,6 +7,8 @@ import com.example.dotheG.model.Member;
 import com.example.dotheG.model.MemberInfo;
 import com.example.dotheG.repository.MemberInfoRepository;
 import com.example.dotheG.repository.MemberRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,9 +47,15 @@ public class MemberService {
         MemberInfo memberInfo = new MemberInfo(member);
         memberInfoRepository.save(memberInfo);
         stepService.createStep(member);
-
     }
 
-
-
+    public Member getCurrentMember(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loginId = authentication.getName();
+        Member member = memberRepository.findByUserLogin(loginId);
+        if (member == null){
+            throw new RuntimeException("사용자를 찾을 수 없습니다. " + loginId);
+        }
+        return member;
+    }
 }
