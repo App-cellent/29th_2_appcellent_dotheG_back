@@ -1,6 +1,6 @@
 package com.example.dotheG.service;
 
-import com.example.dotheG.dto.ActivityResponseDto;
+import com.example.dotheG.dto.activity.ActivityResponseDto;
 import com.example.dotheG.model.Activity;
 import com.example.dotheG.model.Member;
 import com.example.dotheG.model.MemberActivity;
@@ -26,7 +26,7 @@ public class ActivityService {
     private final ActivityRepository activityRepository;
     private final MemberActivityRepository memberActivityRepository;
     private final MemberInfoRepository memberInfoRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     // OpenCV 사용 (사진 분석)
     public Long analyzePhoto(MultipartFile activityImage){
@@ -79,9 +79,9 @@ public class ActivityService {
         ));
     }
 
-    public List<ActivityResponseDto> viewToday(Long userId) {
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+    public List<ActivityResponseDto> viewToday() {
+        Member member = memberService.getCurrentMember();
+        // Todo 오늘 아직 퀘스트 등록 안했으면 메세지 띄우기
 
         // 사용자 ID와 날짜에 해당하는 member_activity를 불러오기
         List<MemberActivity> activities = memberActivityRepository.findByUserIdAndActivityDate(member, LocalDate.now());
