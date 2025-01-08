@@ -40,4 +40,11 @@ public class MemberQuiz {
         this.isCorrect = isCorrect;
         this.isSolved = isSolved;
     }
+
+    public MemberQuiz(Member userId){
+        this.userId = userId;
+        this.quizId = null;
+        this.isSolved = false;
+        this.isCorrect = null;
+    }
 }

@@ -28,7 +28,6 @@ public class MemberActivity {
 
     private String activityName;
 
-    // Todo : 이미지
     @Lob
     private byte[] activityImage;
 

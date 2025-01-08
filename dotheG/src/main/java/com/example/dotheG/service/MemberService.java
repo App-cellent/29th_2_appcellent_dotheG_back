@@ -6,7 +6,9 @@ import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Member;
 import com.example.dotheG.model.MemberInfo;
 import com.example.dotheG.model.Step;
+import com.example.dotheG.model.MemberQuiz;
 import com.example.dotheG.repository.MemberInfoRepository;
+import com.example.dotheG.repository.MemberQuizRepository;
 import com.example.dotheG.repository.MemberRepository;
 import com.example.dotheG.repository.StepRepository;
 import org.springframework.security.core.Authentication;
@@ -24,12 +26,15 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final StepRepository stepRepository;
     private final MemberInfoRepository memberInfoRepository;
+    private final MemberQuizRepository memberQuizRepository;
 
-    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder, StepRepository stepRepository, MemberInfoRepository memberInfoRepository) {
+
+    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder, StepRepository stepRepository, MemberInfoRepository memberInfoRepository, MemberQuizRepository memberQuizRepository) {
         this.memberRepository = memberRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.stepRepository = stepRepository;
         this.memberInfoRepository = memberInfoRepository;
+        this.memberQuizRepository = memberQuizRepository;
     }
 
     public void SignUp(MemberDto memberDto) {
@@ -53,6 +58,10 @@ public class MemberService {
 
         Step step = new Step(member, LocalDate.now());
         stepRepository.save(step);
+
+        MemberQuiz memberQuiz = new MemberQuiz(member);
+        memberQuizRepository.save(memberQuiz);
+
     }
 
     public Member getCurrentMember(){
