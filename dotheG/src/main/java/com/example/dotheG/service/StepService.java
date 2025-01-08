@@ -2,6 +2,8 @@ package com.example.dotheG.service;
 
 import com.example.dotheG.dto.Response;
 import com.example.dotheG.dto.step.StepSummaryResponseDto;
+import com.example.dotheG.exception.CustomException;
+import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Member;
 import com.example.dotheG.model.MemberInfo;
 import com.example.dotheG.model.Step;
@@ -21,17 +23,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StepService {
 
+    private final MemberService memberService;
     private final StepRepository stepRepository;
-    private final MemberRepository memberRepository;
     private final MemberInfoRepository memberInfoRepository;
+    private final MemberRepository memberRepository;
 
     // 기존유저용 (12시 지나면 step객체 생성)
     @Transactional
     public void createStepForAllUsers() {
-        // FIXME 실제유저 데이터베이스에서 호출하는것으로 변경 필요
-        // FIXME 현재 null로 작성되어있는 회원전체목록 불러오기 변경 필요
-        List<Member> members = null;
+        List<Member> members = memberRepository.findAll();
         for (Member member : members) {
+            System.out.println("member.getUserName() = " + member.getUserName());
             Optional<Step> existingStep = stepRepository.findByUserIdAndStepDate(member, LocalDate.now());
             if (existingStep.isEmpty()) {
                 createStep(member);
@@ -40,41 +42,31 @@ public class StepService {
 
     }
 
-    // 신규유저용(회원가입시 객체생성)
-    // TODO 회원가입 로직에 step객체 생성하는 로직 추가
     public void createStep(Member member) {
         Step step = new Step(member, LocalDate.now());
         stepRepository.save(step);
     }
 
-    // TODO 기능추가구현
-    // 기본걸음수 반환 필요한지?
-
     // 걸음수 업데이트
     @Transactional
-    public int updateStep(Long userId, int walkingCount) {
-        // FIXME Authentication.getUserName()으로 user정보 받아오기
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(()->new IllegalArgumentException("유저를 찾을수없습니다."));
+    public int updateStep(int walkingCount) {
+        // 로그인 유저 정보 찾기
+        Member member = memberService.getCurrentMember();
 
         // step객체 업데이트
         Optional<Step> stepOptional = stepRepository.findByUserIdAndStepDate(member, LocalDate.now());
-        Step step = stepOptional.orElseThrow(()-> new IllegalStateException("업데이트할 step객체가 없습니다."));
+        Step step = stepOptional.orElseThrow(()-> new CustomException(ErrorCode.STEP_NOT_FOUND));
         step.updateStepCount(walkingCount);
         stepRepository.save(step);
 
-        // TODO 반환을 필요?
         return step.getStepCount();
     }
 
     // 만보기 요약 보고서 반환
-    // TODO month통계는 뺴기
-    public StepSummaryResponseDto getStepSummary(Long userId) {
-        // FIXME Authentication.getUserName()으로 user정보 받아오기
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(()->new IllegalArgumentException("유저를 찾을수없습니다."));
+    public StepSummaryResponseDto getStepSummary() {
+        // 로그인 유저 정보 불러오기
+        Member member = memberService.getCurrentMember();
 
-        // FIXME 매번 조회할때마다 search하는게 비효율적일거같은데, erd추가하는거 고민해보기
         int todaySteps = getTodayStepCount(member);
         int weeklySteps = getWeekStepCount(member);
         //int monthlySteps = getMonthStepCount(member, LocalDate.now());
@@ -94,20 +86,20 @@ public class StepService {
 
     // 만보기 목표달성시 리워드 지급
     @Transactional
-    public Response<Object> getReward(Long userId) {
-        // FIXME Authentication.getUserName()으로 user정보 받아오기
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(()->new IllegalArgumentException("유저를 찾을수없습니다."));
+    public Response<Object> getReward() {
 
+        // 로그인 유저 불러오기
+        Member member = memberService.getCurrentMember();
 
         // 오늘 step 객체 조회
         Optional<Step> stepOptional = stepRepository.findByUserIdAndStepDate(member, LocalDate.now());
-        Step step = stepOptional.orElseThrow(()-> new IllegalStateException("조회할 step객체가 없습니다."));
+        Step step = stepOptional.orElseThrow(()-> new CustomException(ErrorCode.STEP_NOT_FOUND));
 
         // 걸음수, 미션완료 여부 가져오기
         int todaySteps = step.getStepCount();
         boolean isComplete = step.isComplete();
 
+        // FIXME 주간 인증 추가 리워드 10
         // TODO 리워드 지급 함수 분리하기
         if (todaySteps >= 7000) {
             if (isComplete) {
@@ -115,7 +107,7 @@ public class StepService {
             }
             // 리워드 지급
             Optional<MemberInfo> memberInfoOptional = memberInfoRepository.findByUserId(member);
-            MemberInfo memberInfo = memberInfoOptional.orElseThrow(()->new IllegalArgumentException("조회할 MemberInfo가 없습니다."));
+            MemberInfo memberInfo = memberInfoOptional.orElseThrow(()->new CustomException(ErrorCode.MEMBER_INFO_NOT_FOUND));
             memberInfo.addReward(3);
             memberInfoRepository.save(memberInfo);
 
@@ -133,7 +125,7 @@ public class StepService {
     private int getTodayStepCount(Member member) {
         LocalDate today = LocalDate.now();
         Optional<Step> stepOptional = stepRepository.findByUserIdAndStepDate(member, today);
-        Step step = stepOptional.orElseThrow(()-> new IllegalStateException("step객체가 없습니다."));
+        Step step = stepOptional.orElseThrow(()-> new CustomException(ErrorCode.STEP_NOT_FOUND));
         return step.getStepCount();
     }
 
@@ -170,13 +162,10 @@ public class StepService {
 
     // 탄소배출량 계산
     private double getCarbonReduction(int weeklyStepCount) {
-        // TODO 버스, 전철, 차량 폭이 너무큰데 어떤거할지?
-        double temp = weeklyStepCount * 0.75 / 1000;    // km로 환산
-        double carbonReductionCar = temp * 0.192;       // 가솔린차량
-        double carbonReductionBus = temp * 0.105;       // 버스
-        double carbonReductionSubway = temp * 0.052;    // 전철
+        double temp = weeklyStepCount / 1000.0;  // 1000보당 200g 절약
+        double carbonReduction = temp * 200;
 
-        return carbonReductionBus;
+        return carbonReduction;
     }
 
 }
