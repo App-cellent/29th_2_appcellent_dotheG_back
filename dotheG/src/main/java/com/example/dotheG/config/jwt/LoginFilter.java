@@ -1,5 +1,6 @@
 package com.example.dotheG.config.jwt;
 
+import com.example.dotheG.dto.Response;
 import com.example.dotheG.model.Refresh;
 import com.example.dotheG.repository.RefreshRepository;
 import jakarta.servlet.FilterChain;

@@ -1,6 +1,8 @@
 package com.example.dotheG.config.jwt;
 
 import com.example.dotheG.dto.CustomUserDetails;
+import com.example.dotheG.exception.CustomException;
+import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Member;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -30,10 +32,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (accessToken == null) {
             filterChain.doFilter(request, response);
-
             return;
         }
 
+        //만료된 토큰 예외처리는 아래 방식으로 하기
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
@@ -51,8 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
             PrintWriter writer = response.getWriter();
             writer.print("invalid access token");
 
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
 
         String userLogin = jwtUtil.getUsername(accessToken);
