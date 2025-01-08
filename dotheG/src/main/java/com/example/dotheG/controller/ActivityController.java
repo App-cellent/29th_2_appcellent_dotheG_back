@@ -27,7 +27,7 @@ public class ActivityController {
             Long analyzedActivityId = activityService.analyzePhoto(activityImage);
             return Response.success("이미지 분석", null);
         } catch (Exception e){
-            return Response.success("이미지 분석 실패" + HttpStatus.INTERNAL_SERVER_ERROR, null);
+            return Response.fail("이미지 분석 실패 " + HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -37,23 +37,13 @@ public class ActivityController {
     public Response<Objects> requestImage(
             @RequestPart(value = "file", required = false) MultipartFile activityImage,
             @PathVariable("userInfoId") Long userInfoId) {
-        try {
-            activityService.requestImage(activityImage, userInfoId);
-            return Response.success("퀘스트 등록", null);
-        } catch (Exception e) {
-            return Response.fail("퀘스트 등록 실패" + e.getMessage());
-        }
+        activityService.requestImage(activityImage, userInfoId);
+        return Response.success("퀘스트 등록", null);
     }
 
     // 오늘의 인증 조회하기
     @GetMapping("/viewToday")
-    public Response<Objects> viewToday() {
-        List<ActivityResponseDto> activities = activityService.viewToday();
-
-        if (activities.isEmpty()) {
-            return Response.fail("오늘 인증 기록 없음");
-        }
-        return Response.success("오늘 인증 기록 조회", null);
+    public Response<List<ActivityResponseDto>> viewToday() {
+        return Response.success("오늘 인증 기록 조회", activityService.viewToday());
     }
-
 }

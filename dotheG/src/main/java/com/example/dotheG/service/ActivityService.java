@@ -1,6 +1,8 @@
 package com.example.dotheG.service;
 
 import com.example.dotheG.dto.activity.ActivityResponseDto;
+import com.example.dotheG.exception.CustomException;
+import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Activity;
 import com.example.dotheG.model.Member;
 import com.example.dotheG.model.MemberActivity;
@@ -8,7 +10,6 @@ import com.example.dotheG.model.MemberInfo;
 import com.example.dotheG.repository.ActivityRepository;
 import com.example.dotheG.repository.MemberActivityRepository;
 import com.example.dotheG.repository.MemberInfoRepository;
-import com.example.dotheG.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,21 +41,21 @@ public class ActivityService {
     public void requestImage(MultipartFile activityImage, Long userInfoId) {
         // 사용자 정보 조회
         MemberInfo memberInfo = memberInfoRepository.findById(userInfoId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 사진 분석하여 활동 명 결정
         Long analyzedActivityId = analyzePhoto(activityImage);
 
         // 활동 조회
         Activity activity = activityRepository.findById(analyzedActivityId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid activity ID"));
+                .orElseThrow(() -> new CustomException(ErrorCode.ACTIVITY_NOT_FOUND));
 
         byte[] imageBytes;
         try {
             // MultipartFile을 byte[]로 변환
             imageBytes = activityImage.getBytes();
         } catch (IOException e) {
-            throw new IllegalArgumentException("Failed to process image file", e);
+            throw new CustomException(ErrorCode.ACTIVITY_NOT_FOUND);
         }
 
         // 새로운 MemberActivity 객체 생성
@@ -87,7 +88,7 @@ public class ActivityService {
         List<MemberActivity> activities = memberActivityRepository.findByUserIdAndActivityDate(member, LocalDate.now());
 
         if (activities.isEmpty()) {
-            return null;  // 활동이 없을 경우 null 반환
+            throw new CustomException(ErrorCode.ACTIVITY_NOT_FOUND);
         }
 
         // ActivityResponseDto 리스트로 변환

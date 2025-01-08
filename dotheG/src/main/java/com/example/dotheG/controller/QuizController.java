@@ -1,7 +1,6 @@
 package com.example.dotheG.controller;
 
 import com.example.dotheG.dto.Response;
-import com.example.dotheG.service.MemberService;
 import com.example.dotheG.service.QuizService;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,6 @@ public class QuizController {
     // 퀴즈 풀기
     @PostMapping("/{quizId}/answer")
     public Response<Object> solve(@PathVariable Long quizId, @RequestBody String myAnswer){
-        boolean correct = quizService.solve(quizId, myAnswer);
-        return Response.success("퀴즈 풀기 성공", correct);
+        return Response.success("퀴즈 풀기 성공", quizService.solve(quizId, myAnswer));
     }
 }
