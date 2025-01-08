@@ -62,7 +62,7 @@ public class ReissueService {
         String userLogin = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
 
-        String newAccess = jwtUtil.createToken("access", userLogin, role, 600000L);
+        String newAccess = jwtUtil.createToken("access", userLogin, role, 3600000L);
         String newRefresh = jwtUtil.createToken("refresh", userLogin, role, 86400000L);
 
         refreshRepository.deleteByRefresh(refresh);
