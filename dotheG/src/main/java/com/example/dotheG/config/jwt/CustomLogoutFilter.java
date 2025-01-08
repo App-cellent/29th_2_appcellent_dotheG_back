@@ -1,5 +1,7 @@
 package com.example.dotheG.config.jwt;
 
+import com.example.dotheG.exception.CustomException;
+import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -51,27 +53,23 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         if (refresh == null) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
         }
 
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
 
         String category = jwtUtil.getCategory(refresh);
         if (!category.equals("refresh")) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
 
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if (!isExist) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
+            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
         }
 
         refreshRepository.deleteByRefresh(refresh);
@@ -82,6 +80,5 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         response.addCookie(cookie);
         response.setStatus(HttpServletResponse.SC_OK);
-
     }
 }

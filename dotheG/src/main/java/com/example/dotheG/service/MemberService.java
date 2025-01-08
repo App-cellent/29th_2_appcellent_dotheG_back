@@ -1,6 +1,8 @@
 package com.example.dotheG.service;
 
 import com.example.dotheG.dto.MemberDto;
+import com.example.dotheG.exception.CustomException;
+import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Member;
 import com.example.dotheG.model.MemberInfo;
 import com.example.dotheG.repository.MemberInfoRepository;
@@ -35,7 +37,7 @@ public class MemberService {
         Boolean isExist = memberRepository.existsByUserLogin(userLogin);
 
         if (isExist) {
-            return;
+            throw new CustomException(ErrorCode.ID_DUPLICATED);
         }
 
         Member member = new Member(userName, userLogin, bCryptPasswordEncoder.encode(userPassword), true, false, "ROLE_USER");

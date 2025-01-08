@@ -1,6 +1,8 @@
 package com.example.dotheG.service;
 
 import com.example.dotheG.config.jwt.JwtUtil;
+import com.example.dotheG.exception.CustomException;
+import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Refresh;
 import com.example.dotheG.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -35,34 +37,30 @@ public class ReissueService {
         }
 
         if (refresh == null) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
         }
 
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
 
         String category = jwtUtil.getCategory(refresh);
 
         if (!category.equals("refresh")) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
 
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if (!isExist) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
         }
 
         String userLogin = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
 
-        String newAccess = jwtUtil.createToken("access", userLogin, role, 600000L);
+        String newAccess = jwtUtil.createToken("access", userLogin, role, 3600000L);
         String newRefresh = jwtUtil.createToken("refresh", userLogin, role, 86400000L);
 
         refreshRepository.deleteByRefresh(refresh);
