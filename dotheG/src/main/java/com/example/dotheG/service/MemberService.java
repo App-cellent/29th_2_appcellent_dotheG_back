@@ -5,12 +5,16 @@ import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Member;
 import com.example.dotheG.model.MemberInfo;
+import com.example.dotheG.model.Step;
 import com.example.dotheG.repository.MemberInfoRepository;
 import com.example.dotheG.repository.MemberRepository;
+import com.example.dotheG.repository.StepRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 public class MemberService {
@@ -18,13 +22,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final StepService stepService;
+    private final StepRepository stepRepository;
     private final MemberInfoRepository memberInfoRepository;
 
-    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder, StepService stepService, MemberInfoRepository memberInfoRepository) {
+    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder, StepRepository stepRepository, MemberInfoRepository memberInfoRepository) {
         this.memberRepository = memberRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.stepService = stepService;
+        this.stepRepository = stepRepository;
         this.memberInfoRepository = memberInfoRepository;
     }
 
@@ -46,7 +50,9 @@ public class MemberService {
 
         MemberInfo memberInfo = new MemberInfo(member);
         memberInfoRepository.save(memberInfo);
-        stepService.createStep(member);
+
+        Step step = new Step(member, LocalDate.now());
+        stepRepository.save(step);
     }
 
     public Member getCurrentMember(){
@@ -54,7 +60,7 @@ public class MemberService {
         String loginId = authentication.getName();
         Member member = memberRepository.findByUserLogin(loginId);
         if (member == null){
-            throw new RuntimeException("사용자를 찾을 수 없습니다. " + loginId);
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
         return member;
     }
