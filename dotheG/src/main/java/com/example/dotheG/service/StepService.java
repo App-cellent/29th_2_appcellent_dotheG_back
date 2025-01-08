@@ -103,7 +103,8 @@ public class StepService {
         // TODO 리워드 지급 함수 분리하기
         if (todaySteps >= 7000) {
             if (isComplete) {
-                return Response.fail("이미 지급 완료되었습니다.");
+                // 이미 리워드가 지급된 상태
+                throw new CustomException(ErrorCode.REWARD_ALREADY_GRANTED);
             }
             // 리워드 지급
             Optional<MemberInfo> memberInfoOptional = memberInfoRepository.findByUserId(member);
@@ -118,7 +119,8 @@ public class StepService {
 
         }
 
-        return Response.fail("걸음수 부족");
+        // 걸음수 부족한상태로 리워드 요청
+        throw new CustomException(ErrorCode.INSUFFICIENT_STEP_COUNT);
     }
 
     // 오늘 걸음수

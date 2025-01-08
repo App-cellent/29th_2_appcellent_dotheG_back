@@ -20,7 +20,9 @@ public enum ErrorCode {
     QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 퀴즈가 없습니다."),
     MYANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "정답이 입력되지 않았습니다."),
     PROCESS_IMAGE_FAILED(HttpStatus.UNPROCESSABLE_ENTITY, "이미지 처리에 실패했습니다."),
-    ACTIVITY_NOT_FOUND(HttpStatus.NOT_FOUND, "오늘 인증한 활동이 없습니다.");
+    ACTIVITY_NOT_FOUND(HttpStatus.NOT_FOUND, "오늘 인증한 활동이 없습니다."),
+    INSUFFICIENT_STEP_COUNT(HttpStatus.BAD_REQUEST, "걸음수가 부족합니다."),
+    REWARD_ALREADY_GRANTED(HttpStatus.BAD_REQUEST, "이미 리워드가 지급되었습니다.");
 
     private final HttpStatus status;
     private final String message;
