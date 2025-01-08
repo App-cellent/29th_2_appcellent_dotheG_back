@@ -162,8 +162,8 @@ public class StepService {
 
     // 탄소배출량 계산
     private double getCarbonReduction(int weeklyStepCount) {
-        double temp = weeklyStepCount / 1000.0;  // 1000보당 200g 절약
-        double carbonReduction = temp * 200;
+        double temp = (weeklyStepCount / 1000.0) * 200;  // 1000보당 200g 절약
+        double carbonReduction = temp / 1000.0;          // kg로 환산
 
         return carbonReduction;
     }
