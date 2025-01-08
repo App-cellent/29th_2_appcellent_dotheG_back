@@ -15,11 +15,11 @@ public class QuizService {
 
     private final QuizRepository quizRepository;
     private final MemberQuizRepository memberQuizRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     // 오늘의 퀴즈 이미 풀었는지 조회
-    public String check(Long userId, Long quizId){
-        Member member = memberRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("no user"));
+    public String check(Long quizId){
+        Member member = memberService.getCurrentMember();
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException("no quiz"));
 
         MemberQuiz memberQuiz = memberQuizRepository.findByUserIdAndQuizId(member, quiz);
@@ -32,8 +32,8 @@ public class QuizService {
     }
 
     // 퀴즈 풀기
-    public void solve(Long userId, Long quizId, String myAnswer){
-        Member member = memberRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("no user"));
+    public boolean solve(Long quizId, String myAnswer){
+        Member member = memberService.getCurrentMember();
         // 퀴즈 조회
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException("no quiz"));
         String quizAnswer = quiz.getQuizAnswer();
@@ -55,7 +55,8 @@ public class QuizService {
             }
         } else {
             memberQuiz.updateStatus(myAnswer.equals(quizAnswer), true);
+            memberQuizRepository.save(memberQuiz);
+            return myAnswer.equals(quizAnswer);
         }
-        memberQuizRepository.save(memberQuiz);
     }
 }
