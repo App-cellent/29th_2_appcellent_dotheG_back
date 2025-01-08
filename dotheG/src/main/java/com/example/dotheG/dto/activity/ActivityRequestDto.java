@@ -1,4 +1,4 @@
-package com.example.dotheG.dto;
+package com.example.dotheG.dto.activity;
 
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
