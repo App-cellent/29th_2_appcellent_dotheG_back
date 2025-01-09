@@ -55,7 +55,7 @@ public class ActivityService {
             // MultipartFile을 byte[]로 변환
             imageBytes = activityImage.getBytes();
         } catch (IOException e) {
-            throw new CustomException(ErrorCode.ACTIVITY_NOT_FOUND);
+            throw new CustomException(ErrorCode.PROCESS_IMAGE_FAILED);
         }
 
         // 새로운 MemberActivity 객체 생성
@@ -82,13 +82,13 @@ public class ActivityService {
 
     public List<ActivityResponseDto> viewToday() {
         Member member = memberService.getCurrentMember();
-        // Todo 오늘 아직 퀘스트 등록 안했으면 메세지 띄우기
 
         // 사용자 ID와 날짜에 해당하는 member_activity를 불러오기
         List<MemberActivity> activities = memberActivityRepository.findByUserIdAndActivityDate(member, LocalDate.now());
 
         if (activities.isEmpty()) {
-            throw new CustomException(ErrorCode.ACTIVITY_NOT_FOUND);
+            throw new CustomException(ErrorCode.MYACTIVITY_NOT_FOUND);
+            // Todo 이거 false 메세지가 아니라 true(활동 없음)로 출력할 수 있어야하나?
         }
 
         // ActivityResponseDto 리스트로 변환
