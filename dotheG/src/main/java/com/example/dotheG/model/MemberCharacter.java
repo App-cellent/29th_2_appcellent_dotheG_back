@@ -1,7 +1,9 @@
 package com.example.dotheG.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 public class MemberCharacter {
     @Id
@@ -16,4 +18,11 @@ public class MemberCharacter {
     @ManyToOne
     @JoinColumn(name="CHAR_ID")
     private Character charId;
+
+    protected MemberCharacter() {}
+
+    public MemberCharacter(MemberInfo userInfo, Character character) {
+        this.userInfoId = userInfo;
+        this.charId = character;
+    }
 }
