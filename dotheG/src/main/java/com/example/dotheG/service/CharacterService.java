@@ -96,9 +96,15 @@ public class CharacterService {
     // 캐릭터 도감 조회
     public List<CharacterDto> getCharacterCollection(Long userId, String viewType) {
         // 1. 사용자 보유 캐릭터 조회
+        if (userId == null) {
+            throw new CustomException(ErrorCode.MISSING_USER_ID);
+        }
         List<MemberCharacter> ownedCharacters = memberCharacterRepository.findByUserInfoId_UserId(userId);
 
         // 2. 필터링 조건 설정
+        if (!isValidViewType(viewType)) {
+            throw new CustomException(ErrorCode.INVALID_VIEW_TYPE);
+        }
         return ownedCharacters.stream()
                 .filter(memberCharacter -> filterByViewType(memberCharacter.getCharId().getCharRarity(), viewType))
                 .map(memberCharacter -> new CharacterDto(
@@ -108,6 +114,13 @@ public class CharacterService {
                         memberCharacter.getCharId().getCharImageUrl()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    private boolean isValidViewType(String viewType) {
+        return switch (viewType.toUpperCase()) {
+            case "ALL", "COMMON", "NORMAL", "RARE", "LEGENDARY" -> true;
+            default -> false;
+        };
     }
 
     private boolean filterByViewType(int rarity, String viewType) {
