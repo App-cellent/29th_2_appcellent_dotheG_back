@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.*;
 public class StepController {
     private final StepService stepService;
 
+    @GetMapping("/test/api")
+    public String test() {
+        return "this is dotheG server.";
+    }
+
     @GetMapping("/test")
     public Response<?> testAPI() {
         return Response.success("테스트입니다.", null);
