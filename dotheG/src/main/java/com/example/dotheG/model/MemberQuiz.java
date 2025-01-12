@@ -29,20 +29,20 @@ public class MemberQuiz {
     @Nullable
     private Boolean isCorrect;
 
-    public MemberQuiz(Member userId, Quiz quizId){
-        this.userId = userId;
+    public void updateStatus(Quiz quizId, boolean isCorrect, boolean isSolved) {
         this.quizId = quizId;
-        this.isSolved = false;
-        this.isCorrect = null;
-    }
-
-    public void updateStatus(boolean isCorrect, boolean isSolved) {
         this.isCorrect = isCorrect;
         this.isSolved = isSolved;
     }
 
     public MemberQuiz(Member userId){
         this.userId = userId;
+        this.quizId = null;
+        this.isSolved = false;
+        this.isCorrect = null;
+    }
+
+    public void resetMemberQuiz(){
         this.quizId = null;
         this.isSolved = false;
         this.isCorrect = null;
