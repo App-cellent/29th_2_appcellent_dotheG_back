@@ -14,7 +14,7 @@ public class StepController {
 
     @GetMapping("/test/api")
     public String test() {
-        return "this is dotheG server.";
+        return "두더지 서버 테스트";
     }
 
     @GetMapping("/test")
