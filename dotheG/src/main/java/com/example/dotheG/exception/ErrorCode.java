@@ -24,7 +24,11 @@ public enum ErrorCode {
     INSUFFICIENT_STEP_COUNT(HttpStatus.BAD_REQUEST, "걸음수가 부족합니다."),
     REWARD_ALREADY_GRANTED(HttpStatus.BAD_REQUEST, "이미 리워드가 지급되었습니다."),
     ACTIVITY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 활동이 등록되어있지 않습니다."),
-    MYACTIVITY_NOT_FOUND(HttpStatus.NOT_FOUND, "오늘 인증한 활동이 없습니다.");
+    MYACTIVITY_NOT_FOUND(HttpStatus.NOT_FOUND, "오늘 인증한 활동이 없습니다."),
+    NAME_NOT_WRITTEN(HttpStatus.BAD_REQUEST, "닉네임을 입력해 주세요."),
+    NAME_FAILED(HttpStatus.UNPROCESSABLE_ENTITY, "길이에 맞는 닉네임을 입력해주세요."),
+    PASSWORD_DIFFERENT(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    WITHDRAW_ALREADY(HttpStatus.CONFLICT, "이미 탈퇴한 회원입니다.");
 
     private final HttpStatus status;
     private final String message;
