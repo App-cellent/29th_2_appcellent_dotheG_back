@@ -22,30 +22,47 @@ public class Step {
     @JoinColumn(name = "USER_ID")
     private Member userId;
 
-    private int stepCount;
+    private int todayStep;  // 오늘 걸음수 (매일 초기화)
+
+    private int weeklyStep; // 주간 걸음수 (매주 초기화)
+
+    private int totalStep;  // 누적 걸음수
 
     @Column(columnDefinition = "boolean default false")
-    private boolean isComplete;
+    private boolean todayMissionComplete;   // 일일 걸음수 달성 여부
 
-    private LocalDate stepDate;
+    @Column(columnDefinition = "boolean default false")
+    private boolean weeklyMissionComplete;  // 주간 걸음수 달성 여부
 
-    public Step(Member userId, LocalDate stepDate) {
+    public Step(Member userId) {
         this.userId = userId;
-        this.stepCount = 0;
-        this.stepDate = stepDate;
-
+        this.todayStep = 0;
+        this.weeklyStep = 0;
+        this.totalStep = 0;
     }
 
-    public int getStepCount() {
-        return stepCount;
+    public void updateStep(int walkingCount) {
+        this.weeklyStep += walkingCount-todayStep;
+        this.totalStep += walkingCount-todayStep;
+        this.todayStep = walkingCount;
     }
 
-    public void updateStepCount(int steps) {
-        this.stepCount += steps;
+    public void resetTodayStep() {
+        this.todayStep = 0;
+        this.todayMissionComplete = false;
     }
 
-    public void updateisComplete() {
-        this.isComplete = true;
+    public void resetWeeklyStep() {
+        this.weeklyStep = 0;
+        this.weeklyMissionComplete = false;
+    }
+
+    public void setTodayMissionComplete() {
+        this.todayMissionComplete = true;
+    }
+
+    public void setWeeklyMissionComplete() {
+        this.weeklyMissionComplete = true;
     }
 
 }
