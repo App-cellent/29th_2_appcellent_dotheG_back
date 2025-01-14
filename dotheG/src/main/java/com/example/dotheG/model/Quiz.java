@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
@@ -17,7 +17,7 @@ public class Quiz {
     @Column(name = "QUIZ_ID")
     private Long quizId;
 
-    private Date quizDate;
+    private LocalDate quizDate;
 
     private String quizAnswer;
 

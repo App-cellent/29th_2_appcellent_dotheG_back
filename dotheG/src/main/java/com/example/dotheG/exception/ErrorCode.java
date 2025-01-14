@@ -26,6 +26,10 @@ public enum ErrorCode {
     ACTIVITY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 활동이 등록되어있지 않습니다."),
     MYACTIVITY_NOT_FOUND(HttpStatus.NOT_FOUND, "오늘 인증한 활동이 없습니다."),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "유효하지 않은 객체입니다.");
+    NAME_NOT_WRITTEN(HttpStatus.BAD_REQUEST, "닉네임을 입력해 주세요."),
+    NAME_FAILED(HttpStatus.UNPROCESSABLE_ENTITY, "길이에 맞는 닉네임을 입력해주세요."),
+    PASSWORD_DIFFERENT(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    WITHDRAW_ALREADY(HttpStatus.CONFLICT, "이미 탈퇴한 회원입니다.");
 
     private final HttpStatus status;
     private final String message;

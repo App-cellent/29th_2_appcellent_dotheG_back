@@ -16,13 +16,14 @@ public class QuizController {
 
     // 오늘의 퀴즈 이미 풀었는지 조회
     @GetMapping()
-    public Response<Object> check(@RequestParam("quizId") Long quizId){
-        return Response.success("퀴즈 조회", quizService.check(quizId));
+    public Response<Object> check(){
+        return Response.success("퀴즈 조회", quizService.check());
+        // 풀었으면 true 안풀었으면 false
     }
 
     // 퀴즈 풀기
-    @PostMapping("/{quizId}/answer")
-    public Response<Object> solve(@PathVariable Long quizId, @RequestBody String myAnswer){
-        return Response.success("퀴즈 풀기 성공", quizService.solve(quizId, myAnswer));
+    @PostMapping("/answer")
+    public Response<Object> solve(@RequestBody String myAnswer){
+        return Response.success("퀴즈 풀기 성공", quizService.solve(myAnswer));
     }
 }
