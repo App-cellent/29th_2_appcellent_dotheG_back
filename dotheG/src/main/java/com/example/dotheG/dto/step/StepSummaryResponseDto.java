@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 public class StepSummaryResponseDto {
     private int today;
     private int week;
-    //private int month;
     private int total;
     private double carbonReduction; // kg단위
 }
