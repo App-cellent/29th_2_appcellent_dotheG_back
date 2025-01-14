@@ -56,7 +56,7 @@ public class MemberService {
         MemberInfo memberInfo = new MemberInfo(member);
         memberInfoRepository.save(memberInfo);
 
-        Step step = new Step(member, LocalDate.now());
+        Step step = new Step(member);
         stepRepository.save(step);
 
         MemberQuiz memberQuiz = new MemberQuiz(member);
