@@ -33,11 +33,10 @@ public class ActivityController {
 
     // 퀘스트 등록하기 (사진 결과 저장)
     // [이미지, 활동 명, 날짜] 저장되어야 함 + 리워드 지급 받아야 함
-    @PostMapping("/certification/{userInfoId}")
+    @PostMapping("/certification")
     public Response<Objects> requestImage(
-            @RequestPart(value = "file", required = false) MultipartFile activityImage,
-            @PathVariable("userInfoId") Long userInfoId) {
-        activityService.requestImage(activityImage, userInfoId);
+            @RequestPart(value = "activityImage", required = false) MultipartFile activityImage) {
+        activityService.requestImage(activityImage);
         return Response.success("퀘스트 등록", null);
     }
 

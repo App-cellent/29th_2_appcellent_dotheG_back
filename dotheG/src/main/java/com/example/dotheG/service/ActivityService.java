@@ -38,13 +38,13 @@ public class ActivityService {
     // 퀘스트 등록하기 (사진 결과 저장)
     // [이미지, 활동 명, 날짜] 저장되어야 함 + 리워드 지급 받아야 함
     @Transactional
-    public void requestImage(MultipartFile activityImage, Long userInfoId) {
+    public void requestImage(MultipartFile activityImage) {
         // 사용자 정보 조회
-        MemberInfo memberInfo = memberInfoRepository.findById(userInfoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        MemberInfo memberInfo = memberService.getCurrentMemberInfo();
 
         // 사진 분석하여 활동 명 결정
         Long analyzedActivityId = analyzePhoto(activityImage);
+        // Fixme 이거 뭔가 두 메소드를 연결하는 사이에 문제가 있을 것 같아 
 
         // 활동 조회
         Activity activity = activityRepository.findById(analyzedActivityId)
