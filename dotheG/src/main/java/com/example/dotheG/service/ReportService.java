@@ -44,6 +44,9 @@ public class ReportService {
 
         // 사용자 정보 조회
         Member member = memberService.getCurrentMember();
+        if (member == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
 
         // 지난 주 걸음수 데이터 조회
         int weeklyStepCount = stepRepository.getWeeklySteps(member, lastWeekMonday, lastWeekSunday);
@@ -73,6 +76,9 @@ public class ReportService {
     public WeeklyReportResponseDto getWeeklyReport() {
         // 사용자 정보 조회
         Member member = memberService.getCurrentMember();
+        if (member == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
 
         // 가장 최신 주간 보고서 조회
         WeekReport weekReport = weekReportRepository.findLatestReportByUser(member.getUserId())
