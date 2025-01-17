@@ -15,7 +15,6 @@ import com.example.dotheG.repository.MemberCharacterRepository;
 import com.example.dotheG.repository.MemberInfoRepository;
 import com.example.dotheG.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

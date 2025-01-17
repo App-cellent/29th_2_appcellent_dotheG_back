@@ -4,6 +4,7 @@ import com.example.dotheG.model.Member;
 import com.example.dotheG.model.Step;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -20,4 +21,7 @@ public interface StepRepository extends JpaRepository<Step, Long> {
 
     @Query("select sum(s.stepCount) from Step s where s.userId = :member")
     int findTotalStepsByMember(Member member);
+
+    @Query("SELECT SUM(s.stepCount) FROM Step s WHERE s.userId = :member AND s.stepDate BETWEEN :startDate AND :endDate")
+    int getWeeklySteps(@Param("member") Member member, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

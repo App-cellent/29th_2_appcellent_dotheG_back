@@ -22,7 +22,8 @@ public enum ErrorCode {
     MAIN_CHARACTER_NOT_SET(HttpStatus.BAD_REQUEST, "대표 캐릭터가 지정되지 않았습니다."),
     MAIN_CHARACTER_NOT_FOUND(HttpStatus.NOT_FOUND,"대표 캐릭터 정보가 존재하지 않습니다."),
     MISSING_USER_ID(HttpStatus.BAD_REQUEST,"userId가 누락되었습니다."),
-    INVALID_VIEW_TYPE(HttpStatus.BAD_REQUEST, "잘못된 viewType 값입니다.");
+    INVALID_VIEW_TYPE(HttpStatus.BAD_REQUEST, "잘못된 viewType 값입니다."),
+    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "주간 보고서가 존재하지 않습니다.");
 
     private final HttpStatus status;
     private final String message;
