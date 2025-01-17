@@ -16,14 +16,14 @@ public class MemberActivity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ACTIVITY_ID")
-    private Long userAcvityId;
+    private Long userActivityId;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     private Member userId;
 
     @ManyToOne
-    @JoinColumn(name = "ACTICITY_ID")
+    @JoinColumn(name = "ACTIVITY_ID")
     private Activity activityId;
 
     private String activityName;
