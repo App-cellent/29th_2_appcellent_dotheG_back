@@ -18,6 +18,10 @@ public class JwtUtil {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
+    public String getLoginType(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("loginType", String.class);
+    }
+
     public String getUsername(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userLogin", String.class);
     }
@@ -34,11 +38,12 @@ public class JwtUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createToken(String category, String userLogin, String role, Long expiredMs) {
+    public String createToken(String category, String userLogin, String role, String loginType, Long expiredMs) {
         return Jwts.builder()
                 .claim("category", category)
                 .claim("userLogin", userLogin)
                 .claim("role", role)
+                .claim("loginType", loginType)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)
