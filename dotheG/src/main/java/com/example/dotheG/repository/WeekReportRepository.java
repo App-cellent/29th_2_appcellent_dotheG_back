@@ -17,4 +17,7 @@ public interface WeekReportRepository extends JpaRepository<WeekReport, Long> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    @Query(value = "SELECT * FROM WEEK_REPORT WHERE USER_ID = :userId ORDER BY WEEK_REPORT_ID DESC LIMIT 1", nativeQuery = true)
+    Optional<WeekReport> findLatestReportByUser(@Param("userId") Long userId);
 }

@@ -35,7 +35,7 @@ public class ReportService {
 
     // 주간 보고서 저장
     @Transactional
-    //@Scheduled(cron = "30 23 * * 7 *") // 매주 일요일 23:30 실행
+    @Scheduled(cron = "30 23 * * 7 *") // 매주 일요일 23:30 실행
     public void saveWeeklyReport() {
         // 현재 날짜 기준으로 전 주 월요일과 일요일 계산
         LocalDate today = LocalDate.now();
@@ -71,21 +71,16 @@ public class ReportService {
     // 주간 보고서 조회
     @Transactional(readOnly = true)
     public WeeklyReportResponseDto getWeeklyReport() {
-        // 현재 날짜 기준으로 전 주 월요일과 일요일 계산
-        LocalDate today = LocalDate.now();
-        LocalDate lastWeekMonday = today.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        LocalDate lastWeekSunday = lastWeekMonday.plusDays(6);
-
         // 사용자 정보 조회
         Member member = memberService.getCurrentMember();
 
-        // 주간 보고서 데이터 조회
-        WeekReport weekReport = weekReportRepository.findByUserAndWeekRange(member, lastWeekMonday, lastWeekSunday)
+        // 가장 최신 주간 보고서 조회
+        WeekReport weekReport = weekReportRepository.findLatestReportByUser(member.getUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.REPORT_NOT_FOUND));
 
         // 활동 인증 데이터 조회
         List<MemberActivity> activities = memberActivityRepository.findActivitiesByUserAndDateRange(
-                member, lastWeekMonday, lastWeekSunday
+                member, weekReport.getWeekStartDate(), weekReport.getWeekEndDate()
         );
 
         Map<String, Long> activityCounts = activities.stream()
