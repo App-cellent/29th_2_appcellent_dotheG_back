@@ -1,7 +1,8 @@
-package com.example.dotheG.service;
+package com.example.dotheG.config.scheduler;
 
 import com.example.dotheG.model.MemberQuiz;
 import com.example.dotheG.repository.MemberQuizRepository;
+import com.example.dotheG.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
