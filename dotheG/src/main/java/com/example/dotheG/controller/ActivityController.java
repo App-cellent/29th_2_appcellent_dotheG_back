@@ -22,10 +22,9 @@ public class ActivityController {
 
     // OpenCV 사용 (사진 분석)
     @GetMapping("/analyze")
-    public Response<Objects> analyzePhoto(@RequestPart("activityImage") MultipartFile activityImage){
+    public Response<Long> analyzePhoto(@RequestPart("activityImage") MultipartFile activityImage){
         try {
-            Long analyzedActivityId = activityService.analyzePhoto(activityImage);
-            return Response.success("이미지 분석", null);
+            return Response.success("이미지 분석", activityService.analyzePhoto(activityImage));
         } catch (Exception e){
             return Response.fail("이미지 분석 실패 " + HttpStatus.INTERNAL_SERVER_ERROR);
         }
