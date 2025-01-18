@@ -1,10 +1,17 @@
 package com.example.dotheG.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class WeekReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,8 +26,8 @@ public class WeekReport {
 
     private int weeklyAvgSteps;
 
-    private Date weekStartDate;
+    private LocalDate weekStartDate;
 
-    private Date weekEndDate;
+    private LocalDate weekEndDate;
 
 }
