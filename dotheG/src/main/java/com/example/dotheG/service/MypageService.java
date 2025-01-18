@@ -8,6 +8,7 @@ import com.example.dotheG.repository.MemberRepository;
 import com.example.dotheG.repository.WithdrawRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +18,7 @@ public class MypageService {
     private final MemberRepository memberRepository;
     private final WithdrawRepository withdrawRepository;
     private final MemberService memberService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void changeName(String newName) {
         Member member = memberService.getCurrentMember();
@@ -24,7 +26,7 @@ public class MypageService {
         // Fixme 중복확인 안해도 됨?
         if(newName == null || newName.isEmpty()){
             throw new CustomException(ErrorCode.NAME_NOT_WRITTEN);
-        } if (newName.length() < 2 || newName.length() > 20) {
+        } if (newName.length() < 2 || newName.length() > 10) {
             throw new CustomException(ErrorCode.NAME_FAILED);
         }
 
@@ -40,9 +42,8 @@ public class MypageService {
         if(!newPassword.equals(confirmedPassword)){
             throw new CustomException(ErrorCode.PASSWORD_DIFFERENT);
         } else {
-            member.changePassword(newPassword);
+            member.changePassword(bCryptPasswordEncoder.encode(newPassword));
             memberRepository.save(member);
-            // Todo 암호화 하면서 저장해야하나 ...?
         }
     }
 
