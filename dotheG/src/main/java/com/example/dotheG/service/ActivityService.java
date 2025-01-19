@@ -1,6 +1,7 @@
 package com.example.dotheG.service;
 
-import org.opencv.core.*;
+//import org.opencv.core.*;
+//import org.opencv.imgproc.Imgproc;
 
 import com.example.dotheG.dto.activity.ActivityResponseDto;
 import com.example.dotheG.exception.CustomException;
@@ -13,7 +14,6 @@ import com.example.dotheG.repository.ActivityRepository;
 import com.example.dotheG.repository.MemberActivityRepository;
 import com.example.dotheG.repository.MemberInfoRepository;
 import lombok.RequiredArgsConstructor;
-import org.opencv.imgproc.Imgproc;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,53 +40,54 @@ public class ActivityService {
 
     // OpenCV 사용 (사진 분석)
     public Long analyzePhoto(MultipartFile activityImage){
-        try {
-            // 1. MultipartFile -> BufferedImage로 변환
-            InputStream inputStream = activityImage.getInputStream();
-            BufferedImage bufferedImage = ImageIO.read(inputStream);
-
-            // 2. BufferedImage -> Mat 변환
-            Mat image = new Mat(bufferedImage.getHeight(), bufferedImage.getWidth(), CvType.CV_8UC3);
-            byte[] data = ((DataBufferByte) bufferedImage.getRaster().getDataBuffer()).getData();
-            image.put(0, 0, data);
-
-            // 3. 이미지를 축소하여 주요 색상 추출
-            Mat resizedImage = new Mat();
-            Size size = new Size(50, 50); // 크기를 축소하여 주요 색상 분석
-            Imgproc.resize(image, resizedImage, size);
-
-            // 4. 이미지를 HSV로 변환
-            Mat hsvImage = new Mat();
-            Imgproc.cvtColor(resizedImage, hsvImage, Imgproc.COLOR_BGR2HSV);
-
-            // 5. 색상 히스토그램 분석
-            Mat hist = new Mat();
-            Imgproc.calcHist(
-                    Arrays.asList(hsvImage),
-                    new MatOfInt(0), // Hue 채널만 분석
-                    new Mat(),
-                    hist,
-                    new MatOfInt(180), // Hue 범위
-                    new MatOfFloat(0, 180)
-            );
-
-            // 6. 히스토그램에서 가장 높은 값의 Hue 추출
-            Core.MinMaxLocResult mmr = Core.minMaxLoc(hist);
-            double dominantHue = mmr.maxLoc.y;
-
-            // 7. Hue 값에 따라 활동 매핑
-            if (dominantHue >= 0 && dominantHue <= 30) { // 빨강 계열
-                return 1L; // 활동 ID 1 (예: "환경 정화 활동")
-            } else if (dominantHue > 30 && dominantHue <= 90) { // 초록 계열
-                return 2L; // 활동 ID 2 (예: "재활용 분리 활동")
-            } else if (dominantHue > 90 && dominantHue <= 150) { // 파랑 계열
-                return 3L; // 활동 ID 3 (예: "공원 걷기 활동")
-            } else {
-                return 4L; // 기본 활동
-            }
-        } catch (IOException e) {
-            throw new CustomException(ErrorCode.PROCESS_IMAGE_FAILED);
-        }
+        return 1L;
+//        try {
+//            // 1. MultipartFile -> BufferedImage로 변환
+//            InputStream inputStream = activityImage.getInputStream();
+//            BufferedImage bufferedImage = ImageIO.read(inputStream);
+//
+//            // 2. BufferedImage -> Mat 변환
+//            Mat image = new Mat(bufferedImage.getHeight(), bufferedImage.getWidth(), CvType.CV_8UC3);
+//            byte[] data = ((DataBufferByte) bufferedImage.getRaster().getDataBuffer()).getData();
+//            image.put(0, 0, data);
+//
+//            // 3. 이미지를 축소하여 주요 색상 추출
+//            Mat resizedImage = new Mat();
+//            Size size = new Size(50, 50); // 크기를 축소하여 주요 색상 분석
+//            Imgproc.resize(image, resizedImage, size);
+//
+//            // 4. 이미지를 HSV로 변환
+//            Mat hsvImage = new Mat();
+//            Imgproc.cvtColor(resizedImage, hsvImage, Imgproc.COLOR_BGR2HSV);
+//
+//            // 5. 색상 히스토그램 분석
+//            Mat hist = new Mat();
+//            Imgproc.calcHist(
+//                    Arrays.asList(hsvImage),
+//                    new MatOfInt(0), // Hue 채널만 분석
+//                    new Mat(),
+//                    hist,
+//                    new MatOfInt(180), // Hue 범위
+//                    new MatOfFloat(0, 180)
+//            );
+//
+//            // 6. 히스토그램에서 가장 높은 값의 Hue 추출
+//            Core.MinMaxLocResult mmr = Core.minMaxLoc(hist);
+//            double dominantHue = mmr.maxLoc.y;
+//
+//            // 7. Hue 값에 따라 활동 매핑
+//            if (dominantHue >= 0 && dominantHue <= 30) { // 빨강 계열
+//                return 1L; // 활동 ID 1 (예: "환경 정화 활동")
+//            } else if (dominantHue > 30 && dominantHue <= 90) { // 초록 계열
+//                return 2L; // 활동 ID 2 (예: "재활용 분리 활동")
+//            } else if (dominantHue > 90 && dominantHue <= 150) { // 파랑 계열
+//                return 3L; // 활동 ID 3 (예: "공원 걷기 활동")
+//            } else {
+//                return 4L; // 기본 활동
+//            }
+//        } catch (IOException e) {
+//            throw new CustomException(ErrorCode.PROCESS_IMAGE_FAILED);
+//        }
     }
 
     // 퀘스트 등록하기 (사진 결과 저장)
