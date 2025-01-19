@@ -34,6 +34,12 @@ public class Step {
     @Column(columnDefinition = "boolean default false")
     private boolean weeklyMissionComplete;  // 주간 걸음수 달성 여부
 
+    private double thisMonthSavedCarbon; // 이번 달 탄소 절감량
+
+    private double lastMonthSavedCarbon; // 지난 달 탄소 절감량
+
+    private double totalSavedCarbon; // 누적 탄소 절감량
+
     public Step(Member userId) {
         this.userId = userId;
         this.todayStep = 0;
