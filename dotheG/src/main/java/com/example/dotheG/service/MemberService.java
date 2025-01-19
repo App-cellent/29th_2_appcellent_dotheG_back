@@ -16,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public class MemberService {
 
@@ -71,15 +73,4 @@ public class MemberService {
         }
         return member;
     }
-
-    public MemberInfo getCurrentMemberInfo() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String loginId = authentication.getName();
-
-        Member member = memberRepository.findByUserLogin(loginId);
-
-        return memberInfoRepository.findByUserId(member)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-    }
-
 }
