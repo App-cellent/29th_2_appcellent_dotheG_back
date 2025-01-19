@@ -1,11 +1,17 @@
 package com.example.dotheG.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.security.Timestamp;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.Map;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class MonthReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,14 +22,17 @@ public class MonthReport {
     @JoinColumn(name = "USER_ID")
     private Member userId;
 
-    @Column(name = "report_month") // 변경됨
-    private Timestamp reportMonth;
+    @Column(name = "REPORT_MONTH")
+    private LocalDate reportMonth;
 
-    private int monthlyAvgSteps;
+    private int monthlyTotalSteps;
 
-    private int monthlyCertification;
+    private int monthlyTotalCertifications;
 
-    private int monthlyReward;
-
-    //TODO 랭킹 순위 변수 지정
+    public MonthReport(Member userId, LocalDate reportMonth, int monthlyTotalSteps, int monthlyTotalCertifications) {
+        this.userId = userId;
+        this.reportMonth = reportMonth;
+        this.monthlyTotalSteps = monthlyTotalSteps;
+        this.monthlyTotalCertifications = monthlyTotalCertifications;
+    }
 }
