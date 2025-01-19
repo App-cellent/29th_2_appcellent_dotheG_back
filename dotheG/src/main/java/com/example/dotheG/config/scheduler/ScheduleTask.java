@@ -27,4 +27,7 @@ public class ScheduleTask {
     public void saveWeeklyReport() {
         reportService.saveWeeklyReport();
     }
+
+    @Scheduled(cron = "0 30 23 28-31 * ?", zone = "Asia/Seoul") // 매달 마지막 날 23:30 실행
+    public void saveMonthlyReport() { reportService.saveMonthlyReport();}
 }

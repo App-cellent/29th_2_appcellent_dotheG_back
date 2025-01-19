@@ -108,7 +108,7 @@ public class ReportService {
 
     // 월간 보고서 저장
     @Transactional
-    @Scheduled(cron = "30 23 28-31 * *", zone = "Asia/Seoul") // 매달 마지막 날 23:30 실행
+    @Scheduled(cron = "0 30 23 28-31 * ?", zone = "Asia/Seoul") // 매달 마지막 날 23:30 실행
     public void saveMonthlyReport() {
         // 사용자 정보 조회
         Member member = memberService.getCurrentMember();
