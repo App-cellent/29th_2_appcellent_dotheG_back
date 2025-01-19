@@ -1,4 +1,4 @@
-package com.example.dotheG.dto;
+package com.example.dotheG.dto.character;
 
 public enum DrawType {
     RANDOM(20,0),

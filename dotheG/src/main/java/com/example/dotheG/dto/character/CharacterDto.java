@@ -1,4 +1,4 @@
-package com.example.dotheG.dto;
+package com.example.dotheG.dto.character;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

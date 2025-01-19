@@ -1,9 +1,11 @@
 package com.example.dotheG.service;
 
-import com.example.dotheG.dto.CharacterDto;
-import com.example.dotheG.dto.DrawDto;
-import com.example.dotheG.dto.DrawResponseDto;
-import com.example.dotheG.dto.MainCharacterResponseDto;
+import com.example.dotheG.dto.character.CharacterDto;
+import com.example.dotheG.dto.character.DrawDto;
+import com.example.dotheG.dto.character.DrawResponseDto;
+import com.example.dotheG.dto.character.MainCharacterResponseDto;
+import com.example.dotheG.exception.CustomException;
+import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Character;
 import com.example.dotheG.model.Member;
 import com.example.dotheG.model.MemberCharacter;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
@@ -26,20 +29,20 @@ public class CharacterService {
     private final MemberInfoRepository memberInfoRepository;
     private final MemberCharacterRepository memberCharacterRepository;
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     // 캐릭터 뽑기
     @Transactional
-    public DrawResponseDto drawCharacter(DrawDto drawDto, Long userId) {
+    public DrawResponseDto drawCharacter(DrawDto drawDto) {
         // 1. 사용자 정보 조회
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
-        MemberInfo userInfo = memberInfoRepository.findByUserId(member)
-                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+        Member member = memberService.getCurrentMember();
+        Optional<MemberInfo> memberInfoOptional = memberInfoRepository.findByUserId(member);
+        MemberInfo userInfo = memberInfoOptional.orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 2. 리워드 검증 및 차감
         int cost = drawDto.getDrawType().getCost();
         if (userInfo.getUserReward() < cost) {
-            throw new IllegalArgumentException("리워드가 부족합니다.");
+            throw new CustomException(ErrorCode.REWARD_NOT_ENOUGH);
         }
 
         MemberInfo updatedUserInfo = new MemberInfo(
@@ -71,7 +74,7 @@ public class CharacterService {
             case RANK_4 -> {
                 drawnCharacter = characterRepository.findRandomByRarity(4);
             }
-            default -> throw new IllegalArgumentException("잘못된 뽑기 유형입니다.");
+            default -> throw new CustomException(ErrorCode.INCORRECT_DRAWTYPE);
         }
 
         // 4. 중복 여부 확인 및 저장
@@ -92,9 +95,15 @@ public class CharacterService {
     // 캐릭터 도감 조회
     public List<CharacterDto> getCharacterCollection(Long userId, String viewType) {
         // 1. 사용자 보유 캐릭터 조회
+        if (userId == null) {
+            throw new CustomException(ErrorCode.MISSING_USER_ID);
+        }
         List<MemberCharacter> ownedCharacters = memberCharacterRepository.findByUserInfoId_UserId(userId);
 
         // 2. 필터링 조건 설정
+        if (!isValidViewType(viewType)) {
+            throw new CustomException(ErrorCode.INVALID_VIEW_TYPE);
+        }
         return ownedCharacters.stream()
                 .filter(memberCharacter -> filterByViewType(memberCharacter.getCharId().getCharRarity(), viewType))
                 .map(memberCharacter -> new CharacterDto(
@@ -104,6 +113,13 @@ public class CharacterService {
                         memberCharacter.getCharId().getCharImageUrl()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    private boolean isValidViewType(String viewType) {
+        return switch (viewType.toUpperCase()) {
+            case "ALL", "COMMON", "NORMAL", "RARE", "LEGENDARY" -> true;
+            default -> false;
+        };
     }
 
     private boolean filterByViewType(int rarity, String viewType) {
@@ -121,7 +137,7 @@ public class CharacterService {
     public CharacterDto getCharacterDetail(Long characterId) {
         // 캐릭터 ID로 캐릭터 정보 조회
         Character character = characterRepository.findById(characterId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캐릭터입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_CHARACTER));
 
         // DTO로 변환하여 반환
         return new CharacterDto(
@@ -134,48 +150,45 @@ public class CharacterService {
 
     // 대표 캐릭터 지정
     @Transactional
-    public String setMainCharacter(Long userId, Long characterId) {
+    public void setMainCharacter(Long characterId) {
         // 1. 사용자 정보 조회
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+        Member member = memberService.getCurrentMember();
         MemberInfo memberInfo = memberInfoRepository.findByUserId(member)
-                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 2. 캐릭터 객체 조회
         Character character = characterRepository.findById(characterId)
-                .orElseThrow(() -> new IllegalArgumentException("캐릭터가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_CHARACTER));
 
         // 3. 사용자 보유 캐릭터인지 확인
         boolean ownsCharacter = memberCharacterRepository.existsByUserInfoIdAndCharId(memberInfo, character);
         if (!ownsCharacter) {
-            throw new IllegalArgumentException("사용자가 해당 캐릭터를 소유하지 않습니다.");
+            throw new CustomException(ErrorCode.CHARACTER_NOT_OWNED);
         }
 
         // 4. 대표 캐릭터 설정
         memberInfo.updateMainChar(characterId);
         memberInfoRepository.save(memberInfo);
 
-        return "대표 캐릭터 지정 완료";
     }
 
     // 대표 캐릭터 조회
     @Transactional
     public MainCharacterResponseDto getMainCharacter(Long userId) {
         // 1. 사용자 정보 조회
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
-        MemberInfo memberInfo = memberInfoRepository.findByUserId(member)
-                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+        Member member = memberService.getCurrentMember();
+        Optional<MemberInfo> memberInfoOptional = memberInfoRepository.findByUserId(member);
+        MemberInfo userInfo = memberInfoOptional.orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 2. 대표 캐릭터 ID 확인
-        Long mainCharId = memberInfo.getMainChar();
+        Long mainCharId = userInfo.getMainChar();
         if (mainCharId == null) {
-            throw new IllegalArgumentException("대표 캐릭터가 지정되지 않았습니다.");
+            throw new CustomException(ErrorCode.MAIN_CHARACTER_NOT_SET);
         }
 
         // 3. 대표 캐릭터 정보 조회
         Character mainCharacter = characterRepository.findById(mainCharId)
-                .orElseThrow(() -> new IllegalArgumentException("대표 캐릭터 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MAIN_CHARACTER_NOT_FOUND));
 
         // 4. MainCharacterResponseDto 생성 및 반환
         return new MainCharacterResponseDto(
@@ -183,7 +196,7 @@ public class CharacterService {
                 mainCharacter.getCharName(),
                 mainCharacter.getCharRarity(),
                 mainCharacter.getCharImageUrl(),
-                memberInfo.getUserReward()
+                userInfo.getUserReward()
         );
     }
 }

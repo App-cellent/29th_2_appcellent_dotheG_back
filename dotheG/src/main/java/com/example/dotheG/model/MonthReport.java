@@ -2,6 +2,7 @@ package com.example.dotheG.model;
 
 import jakarta.persistence.*;
 
+import java.security.Timestamp;
 import java.util.Date;
 
 @Entity
@@ -15,7 +16,8 @@ public class MonthReport {
     @JoinColumn(name = "USER_ID")
     private Member userId;
 
-    private Date month;
+    @Column(name = "report_month") // 변경됨
+    private Timestamp reportMonth;
 
     private int monthlyAvgSteps;
 
