@@ -41,7 +41,7 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
 	// OpenCV
-	implementation 'org.opencv:opencv:4.10.0'
+	// implementation 'org.opencv:opencv:4.10.0'
 
 }
 
