@@ -1,6 +1,5 @@
 package com.example.dotheG.controller;
 
-import com.example.dotheG.dto.QuizResponseDto;
 import com.example.dotheG.dto.Response;
 import com.example.dotheG.service.QuizService;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +19,6 @@ public class QuizController {
     public Response<Object> check(){
         return Response.success("퀴즈 조회", quizService.check());
         // 풀었으면 true 안풀었으면 false
-    }
-
-    // 퀴즈 정보 전달
-    @GetMapping("/getQuiz")
-    public Response<QuizResponseDto> getQuiz(){
-        return Response.success("퀴즈 불러오기", quizService.getQuiz());
     }
 
     // 퀴즈 풀기
