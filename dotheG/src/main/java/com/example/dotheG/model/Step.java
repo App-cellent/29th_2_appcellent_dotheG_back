@@ -26,6 +26,8 @@ public class Step {
 
     private int weeklyStep; // 주간 걸음수 (매주 초기화)
 
+    private int monthlyStep; // 월간 걸음수 (매월 초기화)
+
     private int totalStep;  // 누적 걸음수
 
     @Column(columnDefinition = "boolean default false")
@@ -34,21 +36,18 @@ public class Step {
     @Column(columnDefinition = "boolean default false")
     private boolean weeklyMissionComplete;  // 주간 걸음수 달성 여부
 
-    private double thisMonthSavedCarbon; // 이번 달 탄소 절감량
-
-    private double lastMonthSavedCarbon; // 지난 달 탄소 절감량
-
-    private double totalSavedCarbon; // 누적 탄소 절감량
 
     public Step(Member userId) {
         this.userId = userId;
         this.todayStep = 0;
         this.weeklyStep = 0;
+        this.monthlyStep = 0;
         this.totalStep = 0;
     }
 
     public void updateStep(int walkingCount) {
         this.weeklyStep += walkingCount-todayStep;
+        this.monthlyStep += walkingCount-todayStep;
         this.totalStep += walkingCount-todayStep;
         this.todayStep = walkingCount;
     }
@@ -63,6 +62,11 @@ public class Step {
         this.weeklyMissionComplete = false;
     }
 
+    public void resetMonthlyStep() {
+        this.monthlyStep = 0;
+        // 월간 미션없음
+    }
+
     public void setTodayMissionComplete() {
         this.todayMissionComplete = true;
     }
@@ -70,5 +74,6 @@ public class Step {
     public void setWeeklyMissionComplete() {
         this.weeklyMissionComplete = true;
     }
+
 
 }

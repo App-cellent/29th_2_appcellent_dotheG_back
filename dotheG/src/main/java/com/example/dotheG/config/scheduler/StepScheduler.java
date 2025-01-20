@@ -20,8 +20,14 @@ public class StepScheduler {
 
     // 주간 걸음수 초기화(매주 월요일 자정에 작동)
     @Scheduled(cron = "0 0 0 * * MON", zone = "Asia/Seoul")
-    public void runTaskAtMondayMidnightKST() {
+    public void runTaskMondayMidnightKST() {
         stepService.resetWeeklyStep();
+    }
+
+    // 월간 걸음수 초기화(매달 1일 자정에 작동)
+    @Scheduled(cron = "0 0 0 1 * *", zone = "Asia/Seoul")
+    public void runTaskFirstDayMidnightKST() {
+        stepService.resetMonthlyStep();
     }
 
 }
