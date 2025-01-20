@@ -35,12 +35,14 @@ public class MypageService {
         memberRepository.save(member);
     }
 
-    public void changePassword(String newPassword, String confirmedPassword) {
+    public void changePassword(String currentPassword, String newPassword, String confirmedPassword) {
         Member member = memberService.getCurrentMember();
 
         // Todo : 비밀번호 조건 확인
 
-        if(!newPassword.equals(confirmedPassword)){
+        if(!member.getUserPassword().equals(currentPassword)){
+            throw new CustomException(ErrorCode.CURRENT_PASSWORD_DIFFERENT);
+        } else if (!newPassword.equals(confirmedPassword)){
             throw new CustomException(ErrorCode.PASSWORD_DIFFERENT);
         } else {
             member.changePassword(bCryptPasswordEncoder.encode(newPassword));
@@ -48,10 +50,12 @@ public class MypageService {
         }
     }
 
-    public void withdraw(String withdrawalReason) {
+    public void withdraw(String currentPassword, String withdrawalReason) {
         Member member = memberService.getCurrentMember();
 
-        if (withdrawRepository.findByUserId(member).isPresent()){
+        if (!member.getUserPassword().equals(currentPassword)){
+            throw new CustomException(ErrorCode.CURRENT_PASSWORD_DIFFERENT);
+        } else if (withdrawRepository.findByUserId(member).isPresent()){
             throw new CustomException(ErrorCode.WITHDRAW_ALREADY);
         } else {
             // withdraw 테이블에 객체 생성
@@ -70,7 +74,8 @@ public class MypageService {
         Member member = memberService.getCurrentMember();
         MyPageResponseDto myPageResponseDto = new MyPageResponseDto(
                 member.getUserName(),
-                member.getUserLogin()
+                member.getUserLogin(),
+                member.isNoti()
         );
 
         return myPageResponseDto;

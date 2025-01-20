@@ -30,14 +30,14 @@ public class MypageController {
     // 비밀번호 변경
     @PatchMapping("/changePassword")
     public Response<Objects> changePassword(@RequestBody PasswordDto passwordDto){
-        mypageService.changePassword(passwordDto.getNewPassword(), passwordDto.getConfirmedPassword());
+        mypageService.changePassword(passwordDto.getCurrentPassword(), passwordDto.getNewPassword(), passwordDto.getConfirmedPassword());
         return Response.success("비밀번호 변경 성공", null);
     }
 
     // 탈퇴 처리
     @PostMapping("/withdraw")
     public Response<Objects> withdraw(@RequestBody WithdrawDto withdrawDto) {
-        mypageService.withdraw(withdrawDto.getWithdrawalReason());
+        mypageService.withdraw(withdrawDto.getCurrentPassword(), withdrawDto.getWithdrawalReason());
         return Response.success("탈퇴 처리 성공", null);
     }
 
