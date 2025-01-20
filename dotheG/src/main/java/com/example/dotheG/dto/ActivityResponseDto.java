@@ -1,4 +1,4 @@
-package com.example.dotheG.dto.activity;
+package com.example.dotheG.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
