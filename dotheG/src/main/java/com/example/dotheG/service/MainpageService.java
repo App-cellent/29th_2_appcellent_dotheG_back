@@ -31,8 +31,8 @@ public class MainpageService {
         Step step = stepOptional.orElseThrow(() -> new CustomException(ErrorCode.STEP_NOT_FOUND));
 
         // 이번달/지금까지 지킨 나무 - member
-        double monthSavedTree = calculateSavedTree(step.getThisMonthSavedCarbon());
-        double totalSavedTree = calculateSavedTree(step.getTotalSavedCarbon());
+        double monthSavedTree = calculateSavedTree(stepService.getCarbonReduction(step.getMonthlyStep()));
+        double totalSavedTree = calculateSavedTree(stepService.getCarbonReduction(step.getTotalStep()));
 
         // 데일리/스페셜 퀘스트 (랜덤)
         // Fixme : 하루 마다 고정으로 해야 하나? (현재 : 로딩할 때마다 랜덤 생성)

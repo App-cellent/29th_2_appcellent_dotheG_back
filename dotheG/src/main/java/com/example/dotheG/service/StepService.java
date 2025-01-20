@@ -51,6 +51,14 @@ public class StepService {
         log.info("모든 사용자의 주간 걸음수 초기화 완료");
     }
 
+    @Transactional
+    public void resetMonthlyStep() {
+        List<Step> steps = stepRepository.findAll();
+        for (Step step : steps) {
+            step.resetMonthlyStep();
+        }
+    }
+
     // 걸음수 업데이트 (누적 걸음수 받으면 누적-기존으로 추가합산)
     @Transactional
     public int updateStep(int walkingCount) {
@@ -83,10 +91,17 @@ public class StepService {
                 step.getTodayStep(),
                 step.getWeeklyStep(),
                 step.getTotalStep(),
-                getCarbonReduction(step.getWeeklyStep())
+                getCarbonReduction(step.getTodayStep())
         );
 
         return responseDto;
+    }
+
+    // 탄소배출량 계산
+    public double getCarbonReduction(int StepCount) {
+        double temp = (StepCount / 1000.0) * 150;  // 1000보당 150g 절약
+        double carbonReduction = temp / 1000.0;          // kg로 환산
+        return carbonReduction;
     }
 
     // 만보기 목표달성시 리워드 지급(일일, 주간)
@@ -139,13 +154,6 @@ public class StepService {
         rewardStrategy.setRewardGiven(step);
         //stepRepository.saveAndFlush(step);
         return Response.success("리워드 지급 완료", rewardStrategy.getRewardPoints());
-    }
-
-    // 탄소배출량 계산
-    private double getCarbonReduction(int weeklyStepCount) {
-        double temp = (weeklyStepCount / 1000.0) * 200;  // 1000보당 200g 절약
-        double carbonReduction = temp / 1000.0;          // kg로 환산
-        return carbonReduction;
     }
 
     // 리워드 지급 상태 반환
