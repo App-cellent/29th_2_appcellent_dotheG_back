@@ -1,5 +1,6 @@
 package com.example.dotheG.service;
 
+import com.example.dotheG.dto.QuizResponseDto;
 import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Member;
@@ -41,6 +42,19 @@ public class QuizService {
 
         // 오늘 퀴즈를 풀었는지 확인
         return memberQuiz.isSolved(); // 풀었으면 true 안풀었으면 false
+    }
+
+    // 퀴즈 불러오기
+    public QuizResponseDto getQuiz() {
+        // 퀴즈 조회
+        Quiz quiz = quizRepository.findByQuizDate(LocalDate.now()).
+                orElseThrow(() -> new CustomException(ErrorCode.QUIZ_NOT_FOUND));
+
+        return new QuizResponseDto(
+                quiz.getQuizType(),
+                quiz.getQuizTitle(),
+                quiz.getQuizText()
+        );
     }
 
     // 퀴즈 풀기
