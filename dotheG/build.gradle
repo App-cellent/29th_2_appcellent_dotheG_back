@@ -40,8 +40,8 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
-	// OpenCV
-	implementation 'org.opencv:opencv:4.10.0'
+	// fcm (알람서비스)
+	implementation 'com.google.firebase:firebase-admin:9.4.3'
 
 }
 
