@@ -1,6 +1,7 @@
 package com.example.dotheG.controller;
 
 import com.example.dotheG.dto.*;
+import com.example.dotheG.dto.character.*;
 import com.example.dotheG.service.CharacterService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +18,9 @@ public class CharacterController {
     }
 
     // 캐릭터 뽑기
-    @PostMapping("/draw/{userId}")
-    public Response<DrawResponseDto> drawCharacter(@PathVariable("userId") Long userId, @RequestBody DrawDto drawDto) {
-        DrawResponseDto responseDto = characterService.drawCharacter(drawDto, userId);
+    @PostMapping("/draw")
+    public Response<DrawResponseDto> drawCharacter(@RequestBody DrawDto drawDto) {
+        DrawResponseDto responseDto = characterService.drawCharacter(drawDto);
         return Response.success("캐릭터 뽑기 성공", responseDto);
     }
 
@@ -43,7 +44,7 @@ public class CharacterController {
     // 대표 캐릭터 지정
     @PostMapping("/main/set")
     public Response<String> setMainCharacter(@RequestBody SetMainCharacterDto request) {
-        String message = characterService.setMainCharacter(request.getUserId(), request.getCharacterId());
+        characterService.setMainCharacter(request.getCharacterId());
         return Response.success("대표 캐릭터 지정 성공", null);
     }
 

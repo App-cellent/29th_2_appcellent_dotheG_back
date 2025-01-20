@@ -42,6 +42,10 @@ dependencies {
 
 	// fcm (알람서비스)
 	implementation 'com.google.firebase:firebase-admin:9.4.3'
+	
+  // OpenCV
+	// implementation 'org.opencv:opencv:4.10.0'
+
 
 }
 
