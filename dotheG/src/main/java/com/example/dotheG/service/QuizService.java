@@ -1,5 +1,7 @@
 package com.example.dotheG.service;
 
+import com.example.dotheG.dto.QuizResponseDto;
+import com.example.dotheG.dto.activity.ActivityResponseDto;
 import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Member;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,20 @@ public class QuizService {
         return memberQuiz.isSolved(); // 풀었으면 true 안풀었으면 false
     }
 
+    // 퀴즈 불러오기
+    public QuizResponseDto getQuiz() {
+        // 퀴즈 조회
+        Quiz quiz = quizRepository.findByQuizDate(LocalDate.now()).
+                orElseThrow(() -> new CustomException(ErrorCode.QUIZ_NOT_FOUND));
+
+        QuizResponseDto quizResponseDto = new QuizResponseDto(
+                quiz.getQuizType(),
+                quiz.getQuizTitle(),
+                quiz.getQuizText()
+        );
+        return quizResponseDto;
+    }
+
     // 퀴즈 풀기
     public boolean solve(String myAnswer){
         Member member = memberService.getCurrentMember();
@@ -65,4 +82,6 @@ public class QuizService {
             return myAnswer.equals(quizAnswer);
         }
     }
+
+
 }
