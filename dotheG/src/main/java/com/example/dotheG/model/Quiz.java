@@ -23,4 +23,6 @@ public class Quiz {
 
     @Column(length = 1000)
     private String quizSol;
+
+    private Long quizType;
 }

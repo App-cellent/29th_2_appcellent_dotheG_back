@@ -27,8 +27,10 @@ public class Member {
 
     private boolean isNoti;
 
+    private boolean tutorial;
+
     @Builder
-    public Member(String userName, String userLogin ,String userPassword, boolean available, boolean isSocial, String role, boolean isNoti) {
+    public Member(String userName, String userLogin ,String userPassword, boolean available, boolean isSocial, String role, boolean isNoti, boolean tutorial) {
         this.userName = userName;
         this.userLogin = userLogin;
         this.userPassword = userPassword;
@@ -36,6 +38,7 @@ public class Member {
         this.isSocial = isSocial;
         this.role = role;
         this.isNoti = isNoti;
+        this.tutorial = tutorial;
     }
 
     public void changeName(String newNickname){
@@ -48,5 +51,9 @@ public class Member {
 
     public void toggleNoti(){
         this.isNoti = !this.isNoti;
+    }
+
+    public void changeTutorial(){
+        this.tutorial = true;
     }
 }
