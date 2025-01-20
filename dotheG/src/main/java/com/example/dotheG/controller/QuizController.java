@@ -30,7 +30,7 @@ public class QuizController {
 
     // 퀴즈 풀기
     @PostMapping("/answer")
-    public Response<Object> solve(@RequestBody String myAnswer){
+    public Response<Object> solve(@RequestParam String myAnswer){
         return Response.success("퀴즈 풀기 성공", quizService.solve(myAnswer));
     }
 }
