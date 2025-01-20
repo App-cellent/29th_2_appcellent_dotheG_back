@@ -47,7 +47,7 @@ public class MemberService {
             throw new CustomException(ErrorCode.ID_DUPLICATED);
         }
 
-        Member member = new Member(userName, userLogin, bCryptPasswordEncoder.encode(userPassword), true, false, "ROLE_USER", true);
+        Member member = new Member(userName, userLogin, bCryptPasswordEncoder.encode(userPassword), true, false, "ROLE_USER", true, false);
 
         memberRepository.save(member);
 
