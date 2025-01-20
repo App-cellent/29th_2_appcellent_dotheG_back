@@ -1,8 +1,10 @@
 package com.example.dotheG.controller;
 
+import com.example.dotheG.dto.mypage.MyPageResponseDto;
 import com.example.dotheG.dto.mypage.PasswordDto;
 import com.example.dotheG.dto.Response;
 import com.example.dotheG.dto.mypage.WithdrawDto;
+import com.example.dotheG.model.Member;
 import com.example.dotheG.service.MypageService;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,4 +47,10 @@ public class MypageController {
         mypageService.toggleNoti();
         return Response.success("알림 설정 변경 완료", null);
     }
+
+    @GetMapping("/info")
+    public Response<MyPageResponseDto> info(){
+        return Response.success("마이페이지 정보 조회", mypageService.getUserInfo());
+    }
 }
+

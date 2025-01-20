@@ -1,5 +1,6 @@
 package com.example.dotheG.service;
 
+import com.example.dotheG.dto.mypage.MyPageResponseDto;
 import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Member;
@@ -63,5 +64,15 @@ public class MypageService {
     public void toggleNoti() {
         Member member = memberService.getCurrentMember();
         member.toggleNoti(); // on <-> off
+    }
+
+    public MyPageResponseDto getUserInfo() {
+        Member member = memberService.getCurrentMember();
+        MyPageResponseDto myPageResponseDto = new MyPageResponseDto(
+                member.getUserName(),
+                member.getUserLogin()
+        );
+
+        return myPageResponseDto;
     }
 }
