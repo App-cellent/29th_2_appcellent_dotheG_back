@@ -17,7 +17,7 @@ public class MainpageController {
         this.mainpageService = mainpageService;
     }
 
-    @GetMapping
+    @GetMapping("/getInfo")
     public Response<MainpageResponseDto> getInfo(){
         return Response.success("메인페이지 불러오기 성공", mainpageService.getInfo());
     }
