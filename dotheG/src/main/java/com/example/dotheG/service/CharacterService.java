@@ -28,7 +28,6 @@ public class CharacterService {
     private final CharacterRepository characterRepository;
     private final MemberInfoRepository memberInfoRepository;
     private final MemberCharacterRepository memberCharacterRepository;
-    private final MemberRepository memberRepository;
     private final MemberService memberService;
 
     // 캐릭터 뽑기

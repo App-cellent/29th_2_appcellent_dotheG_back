@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
@@ -101,10 +102,33 @@ public class ReportService {
 
         int totalCertifications = activityCounts.values().stream().mapToInt(Long::intValue).sum();
 
+        // 년/월/주 계산
+        LocalDate startDate = weekReport.getWeekStartDate();
+        int year = startDate.getYear();
+        int month = startDate.getMonthValue();
+        int week = startDate.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+
+        String yearMonthWeek = String.format("%d년 %d월 %s", year, month, getKoreanWeekString(week));
+
+        // WeeklyReportResponseDto 생성 및 반환
         return new WeeklyReportResponseDto(
+                member.getUserName(),      // 사용자 이름
+                yearMonthWeek,             // 년/월/주 정보
                 weekReport.getWeeklyAvgSteps(),
                 totalCertifications,
                 activityCounts
         );
+    }
+
+    // 주차를 한글로 변환
+    private String getKoreanWeekString(int week) {
+        switch (week) {
+            case 1: return "첫째 주";
+            case 2: return "둘째 주";
+            case 3: return "셋째 주";
+            case 4: return "넷째 주";
+            case 5: return "다섯째 주";
+            default: return week + "째 주";
+        }
     }
 }
