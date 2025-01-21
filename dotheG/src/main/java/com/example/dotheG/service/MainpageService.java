@@ -41,6 +41,7 @@ public class MainpageService {
         Activity specialActivity = activityRepository.findRandomActivity(11, 20);
 
         return new MainpageResponseDto(
+                member.getUserName(),
                 memberInfo.getUserReward(),
                 memberInfo.getMainChar(),
                 monthSavedTree,
