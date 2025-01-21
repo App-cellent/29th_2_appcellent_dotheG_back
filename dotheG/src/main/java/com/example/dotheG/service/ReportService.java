@@ -30,10 +30,10 @@ public class ReportService {
     private final MemberActivityRepository memberActivityRepository;
     private final StepRepository stepRepository;
     private final MonthReportRepository monthReportRepository;
+    private final StepService stepService;
 
     // 주간 보고서 저장
-    @Transactional
-    @Scheduled(cron = "30 23 * * 7 *") // 매주 일요일 23:30 실행
+    @Transactional // 매주 일요일 23:30 실행
     public void saveWeeklyReport() {
         // 사용자 정보 조회
         Member member = memberService.getCurrentMember();
@@ -108,7 +108,6 @@ public class ReportService {
 
     // 월간 보고서 저장
     @Transactional
-    @Scheduled(cron = "0 30 23 28-31 * ?", zone = "Asia/Seoul") // 매달 마지막 날 23:30 실행
     public void saveMonthlyReport() {
         // 사용자 정보 조회
         Member member = memberService.getCurrentMember();
@@ -121,8 +120,10 @@ public class ReportService {
         LocalDate firstDayOfLastMonth = now.minusMonths(1).withDayOfMonth(1);
         LocalDate lastDayOfLastMonth = now.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
 
-        // 지난 달 총 걸음 수 계산
-        int monthlyTotalSteps = weekReportRepository.findStepsByUserInRange(member.getUserId(), firstDayOfLastMonth, lastDayOfLastMonth);
+        // Step 테이블에서 지난 달 월간 걸음수 가져오기
+        Step step = stepRepository.findByUserId(member)
+                .orElseThrow(() -> new CustomException(ErrorCode.STEP_NOT_FOUND));
+        int monthlyTotalSteps = step.getMonthlyStep(); // 월간 걸음수 가져오기
 
         // 활동 인증 데이터 조회
         List<MemberActivity> activities = memberActivityRepository.findActivitiesByUserAndDateRange(
@@ -180,13 +181,17 @@ public class ReportService {
         // 지킨 나무 수 계산 (탄소 절감량 / 22000g)
         double treesSaved = Math.round((carbonReduction / 22000) * 100.0) / 100.0;
 
+        // 보고서 월 계산 (몇 년 몇 월)
+        String reportMonth = String.format("%d년 %d월", firstDayOfLastMonth.getYear(), firstDayOfLastMonth.getMonthValue());
+
         // MonthlyReportResponseDto 반환
         return new MonthlyReportResponseDto(
-                firstDayOfLastMonth.toString(), // 보고서 월
-                treesSaved,                    // 지킨 나무 수
-                totalCertifications,           // 총 인증 횟수
-                activityCounts,                // 각 인증별 횟수
-                null                           // 탄소 배출량 순위는 추후 구현
+                member.getUserName(),  // 사용자 이름
+                reportMonth,           // 보고서 월
+                treesSaved,            // 지킨 나무 수
+                totalCertifications,   // 총 인증 횟수
+                activityCounts         // 각 인증별 횟수
         );
     }
+
 }
