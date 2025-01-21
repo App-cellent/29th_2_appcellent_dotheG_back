@@ -21,12 +21,12 @@ public class ScheduleTask {
     private final StepService stepService;
 
 
-    @Scheduled(cron = "0 0 0 * * *") // 매일 자정 리셋
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") // 매일 자정 리셋
     public void resetDailyQuiz() {
         quizService.resetDailyQuiz();
     }
 
-    @Scheduled(cron = "30 23 * * 7 *") // 매주 일요일 23:30 실행
+    @Scheduled(cron = "30 23 * * 7 *", zone = "Asia/Seoul") // 매주 일요일 23:30 실행
     public void saveWeeklyReport() {
         reportService.saveWeeklyReport();
     }
