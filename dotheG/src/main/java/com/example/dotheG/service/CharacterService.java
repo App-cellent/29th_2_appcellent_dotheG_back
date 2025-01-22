@@ -177,19 +177,21 @@ public class CharacterService {
         // 1. 사용자 정보 조회
         Member member = memberService.getCurrentMember();
         Optional<MemberInfo> memberInfoOptional = memberInfoRepository.findByUserId(member);
-        MemberInfo userInfo = memberInfoOptional.orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
+        MemberInfo userInfo = memberInfoOptional.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 2. 대표 캐릭터 ID 확인
         Long mainCharId = userInfo.getMainChar();
+
+        // 3. 대표 캐릭터가 설정되지 않은 경우 null 반환
         if (mainCharId == null) {
-            throw new CustomException(ErrorCode.MAIN_CHARACTER_NOT_SET);
+            return null;
         }
 
-        // 3. 대표 캐릭터 정보 조회
+        // 4. 대표 캐릭터 정보 조회
         Character mainCharacter = characterRepository.findById(mainCharId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MAIN_CHARACTER_NOT_FOUND));
 
-        // 4. MainCharacterResponseDto 생성 및 반환
+        // 5. MainCharacterResponseDto 생성 및 반환
         return new MainCharacterResponseDto(
                 mainCharacter.getCharId(),
                 mainCharacter.getCharName(),
