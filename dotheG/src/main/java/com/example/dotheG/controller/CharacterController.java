@@ -50,8 +50,8 @@ public class CharacterController {
 
     // 대표 캐릭터 조회
     @GetMapping("/main")
-    public Response<MainCharacterResponseDto> getMainCharacter(@RequestParam Long userId) {
-        MainCharacterResponseDto mainCharacter = characterService.getMainCharacter(userId);
+    public Response<MainCharacterResponseDto> getMainCharacter() {
+        MainCharacterResponseDto mainCharacter = characterService.getMainCharacter();
         return Response.success("대표 캐릭터 조회 성공", mainCharacter);
     }
 

@@ -173,7 +173,7 @@ public class CharacterService {
 
     // 대표 캐릭터 조회
     @Transactional
-    public MainCharacterResponseDto getMainCharacter(Long userId) {
+    public MainCharacterResponseDto getMainCharacter() {
         // 1. 사용자 정보 조회
         Member member = memberService.getCurrentMember();
         Optional<MemberInfo> memberInfoOptional = memberInfoRepository.findByUserId(member);
@@ -182,9 +182,15 @@ public class CharacterService {
         // 2. 대표 캐릭터 ID 확인
         Long mainCharId = userInfo.getMainChar();
 
-        // 3. 대표 캐릭터가 설정되지 않은 경우 null 반환
+        // 3. 대표 캐릭터가 설정되지 않은 경우 리워드만 반환
         if (mainCharId == null) {
-            return null;
+            return new MainCharacterResponseDto(
+                    null,       // 캐릭터 ID
+                    null,       // 캐릭터 이름
+                    null,       // 캐릭터 희귀도
+                    null,       // 캐릭터 이미지 URL
+                    userInfo.getUserReward() // 남은 리워드만 설정
+            );
         }
 
         // 4. 대표 캐릭터 정보 조회
