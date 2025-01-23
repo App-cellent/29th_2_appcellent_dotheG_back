@@ -25,17 +25,20 @@ public class Member {
 
     private String role;
 
-    private boolean isNoti;
+    private boolean Noti;
+
+    private boolean tutorial;
 
     @Builder
-    public Member(String userName, String userLogin ,String userPassword, boolean available, boolean isSocial, String role, boolean isNoti) {
+    public Member(String userName, String userLogin ,String userPassword, boolean available, boolean isSocial, String role, boolean Noti, boolean tutorial) {
         this.userName = userName;
         this.userLogin = userLogin;
         this.userPassword = userPassword;
         this.available = available;
         this.isSocial = isSocial;
         this.role = role;
-        this.isNoti = isNoti;
+        this.Noti = Noti;
+        this.tutorial = tutorial;
     }
 
     public void changeName(String newNickname){
@@ -47,6 +50,10 @@ public class Member {
     }
 
     public void toggleNoti(){
-        this.isNoti = !this.isNoti;
+        this.Noti = !this.Noti;
+    }
+
+    public void changeTutorial(){
+        this.tutorial = true;
     }
 }

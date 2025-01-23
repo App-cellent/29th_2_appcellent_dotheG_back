@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -23,4 +24,15 @@ public class Quiz {
 
     @Column(length = 1000)
     private String quizSol;
+
+    @Column(length = 1000)
+    private String quizSolImage;
+
+    private Long quizType;
+
+    private String quizTitle;
+
+    @ElementCollection
+    @Column(length = 1000)
+    private List<String> quizText;
 }

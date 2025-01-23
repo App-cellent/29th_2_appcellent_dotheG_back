@@ -24,6 +24,6 @@ public class MemberController {
 
         memberService.SignUp(memberDto);
 
-        return Response.success("회원가입이 성공적으로 처리되었습니다.", "success");
+        return Response.success("회원가입이 성공적으로 처리되었습니다.", memberDto.getUserName());
     }
 }

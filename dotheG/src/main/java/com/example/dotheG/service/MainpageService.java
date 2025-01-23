@@ -9,6 +9,7 @@ import com.example.dotheG.model.MemberInfo;
 import com.example.dotheG.model.Step;
 import com.example.dotheG.repository.ActivityRepository;
 import com.example.dotheG.repository.StepRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,7 @@ public class MainpageService {
         Activity specialActivity = activityRepository.findRandomActivity(11, 20);
 
         return new MainpageResponseDto(
+                member.getUserName(),
                 memberInfo.getUserReward(),
                 memberInfo.getMainChar(),
                 monthSavedTree,
@@ -47,6 +49,12 @@ public class MainpageService {
                 dailyActivity.getActivityId(),
                 specialActivity.getActivityId()
         );
+    }
+
+    @Transactional
+    public void changeTutorial(){
+        Member member = memberService.getCurrentMember();
+        member.changeTutorial();
     }
 
     // {나의 탄소 절감량}/22,000g  (소수 두 번째자리에서 반올림)

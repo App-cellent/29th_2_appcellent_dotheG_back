@@ -1,12 +1,12 @@
 package com.example.dotheG.dto;
 
-import com.example.dotheG.model.Activity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public class MainpageResponseDto {
+    private String userName;
     private int userReward;
     private Long mainChar;
     private double monthSavedTree;

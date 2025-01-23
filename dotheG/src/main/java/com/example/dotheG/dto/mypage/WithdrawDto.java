@@ -4,5 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class WithdrawDto {
+    private String currentPassword;
     private String withdrawalReason;
 }

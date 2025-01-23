@@ -3,7 +3,7 @@ package com.example.dotheG.service;
 //import org.opencv.core.*;
 //import org.opencv.imgproc.Imgproc;
 
-import com.example.dotheG.dto.activity.ActivityResponseDto;
+import com.example.dotheG.dto.ActivityResponseDto;
 import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Activity;
@@ -18,16 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.imageio.ImageIO;
 
 @Service
 @RequiredArgsConstructor

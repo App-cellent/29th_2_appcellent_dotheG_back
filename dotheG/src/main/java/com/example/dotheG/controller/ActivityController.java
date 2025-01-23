@@ -1,6 +1,6 @@
 package com.example.dotheG.controller;
 
-import com.example.dotheG.dto.activity.ActivityResponseDto;
+import com.example.dotheG.dto.ActivityResponseDto;
 import com.example.dotheG.dto.Response;
 import com.example.dotheG.service.ActivityService;
 import org.springframework.http.HttpStatus;
