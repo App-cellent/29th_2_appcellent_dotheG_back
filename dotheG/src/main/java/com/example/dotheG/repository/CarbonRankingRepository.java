@@ -11,11 +11,13 @@ import java.util.List;
 public interface CarbonRankingRepository extends JpaRepository<CarbonRanking, Long> {
     List<CarbonRanking> findAll();
 
+    // 모든 userCount를 0으로 초기화
     @Modifying
     @Query("UPDATE CarbonRanking c SET c.userCount = 0")
     void resetUserCounts();
 
+    // 특정 range의 userCount를 1 증가
     @Modifying
-    @Query("UPDATE CarbonRanking c SET c.userCount = c.userCount + 1 WHERE c.range = :range")
+    @Query("UPDATE CarbonRanking cr SET cr.userCount = cr.userCount + 1 WHERE cr.range = :range")
     void incrementUserCountByRange(@Param("range") String range);
 }

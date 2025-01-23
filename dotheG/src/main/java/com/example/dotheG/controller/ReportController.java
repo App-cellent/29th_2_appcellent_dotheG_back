@@ -1,10 +1,11 @@
 package com.example.dotheG.controller;
 
-import com.example.dotheG.dto.CarbonRankingDto;
+import com.example.dotheG.dto.report.CarbonRankingDto;
 import com.example.dotheG.dto.report.MonthlyReportResponseDto;
 import com.example.dotheG.dto.Response;
 import com.example.dotheG.dto.report.WeeklyReportResponseDto;
 import com.example.dotheG.service.ReportService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,5 +56,19 @@ public class ReportController {
     public Response<List<CarbonRankingDto>> getCarbonRankingGraph() {
         List<CarbonRankingDto> carbonRankingGraph = reportService.getCarbonRankingGraph();
         return Response.success("탄소 배출량 분포 조회 성공", carbonRankingGraph);
+    }
+
+    // resetCarbonRanking 테스트 API
+    @PostMapping("/reset-carbon-ranking")
+    public ResponseEntity<String> resetCarbonRanking() {
+        reportService.resetCarbonRanking();
+        return ResponseEntity.ok("Carbon Ranking reset completed!");
+    }
+
+    // updateCarbonRanking 테스트 API
+    @PostMapping("/update-carbon-ranking")
+    public ResponseEntity<String> updateCarbonRanking() {
+        reportService.updateCarbonRanking();
+        return ResponseEntity.ok("Carbon Ranking update completed!");
     }
 }

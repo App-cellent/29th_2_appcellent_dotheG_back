@@ -1,6 +1,6 @@
 package com.example.dotheG.service;
 
-import com.example.dotheG.dto.CarbonRankingDto;
+import com.example.dotheG.dto.report.CarbonRankingDto;
 import com.example.dotheG.dto.report.MonthlyReportResponseDto;
 import com.example.dotheG.dto.report.WeeklyReportResponseDto;
 import com.example.dotheG.exception.CustomException;
@@ -8,15 +8,13 @@ import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.*;
 import com.example.dotheG.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -100,11 +98,34 @@ public class ReportService {
 
         int totalCertifications = activityCounts.values().stream().mapToInt(Long::intValue).sum();
 
+        // 년/월/주 계산
+        LocalDate startDate = weekReport.getWeekStartDate();
+        int year = startDate.getYear();
+        int month = startDate.getMonthValue();
+        int week = startDate.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+
+        String yearMonthWeek = String.format("%d년 %d월 %s", year, month, getKoreanWeekString(week));
+
+        // WeeklyReportResponseDto 생성 및 반환
         return new WeeklyReportResponseDto(
+                member.getUserName(),      // 사용자 이름
+                yearMonthWeek,             // 년/월/주 정보
                 weekReport.getWeeklyAvgSteps(),
                 totalCertifications,
                 activityCounts
         );
+    }
+
+    // 주차를 한글로 변환
+    private String getKoreanWeekString(int week) {
+        switch (week) {
+            case 1: return "첫째 주";
+            case 2: return "둘째 주";
+            case 3: return "셋째 주";
+            case 4: return "넷째 주";
+            case 5: return "다섯째 주";
+            default: return week + "째 주";
+        }
     }
 
     // 월간 보고서 저장
@@ -210,24 +231,33 @@ public class ReportService {
     // 탄소 절감량 분포 업데이트
     @Transactional
     public void updateCarbonRanking() {
+        // 모든 사용자 월간 보고서 데이터 가져오기
         List<MonthReport> monthReports = monthReportRepository.findAll();
 
         for (MonthReport report : monthReports) {
             int steps = report.getMonthlyTotalSteps();
             double carbonReduction = getCarbonReduction(steps);
 
+            // 탄소 절감량에 따른 range 결정
             String range = getRangeForCarbonReduction(carbonReduction);
+
+            // 해당 range의 userCount 증가
             carbonRankingRepository.incrementUserCountByRange(range);
         }
     }
 
     // 탄소 절감량에 따른 range 반환
     private String getRangeForCarbonReduction(double carbonReduction) {
-        if (carbonReduction < 10) return "0 ~ 10kg";
-        if (carbonReduction < 20) return "10 ~ 20kg";
-        if (carbonReduction < 30) return "20 ~ 30kg";
-        if (carbonReduction < 40) return "30 ~ 40kg";
-        if (carbonReduction < 50) return "40 ~ 50kg";
+        if (carbonReduction < 5) return "0 ~ 5kg";
+        if (carbonReduction < 10) return "5 ~ 10kg";
+        if (carbonReduction < 15) return "10 ~ 15kg";
+        if (carbonReduction < 20) return "15 ~ 20kg";
+        if (carbonReduction < 25) return "20 ~ 25kg";
+        if (carbonReduction < 30) return "25 ~ 30kg";
+        if (carbonReduction < 35) return "30 ~ 35kg";
+        if (carbonReduction < 40) return "35 ~ 40kg";
+        if (carbonReduction < 45) return "40 ~ 45kg";
+        if (carbonReduction < 50) return "45 ~ 50kg";
         return "50kg 이상";
     }
 
