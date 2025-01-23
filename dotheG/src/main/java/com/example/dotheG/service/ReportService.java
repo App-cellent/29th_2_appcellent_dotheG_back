@@ -1,5 +1,6 @@
 package com.example.dotheG.service;
 
+import com.example.dotheG.dto.CarbonRankingDto;
 import com.example.dotheG.dto.report.MonthlyReportResponseDto;
 import com.example.dotheG.dto.report.WeeklyReportResponseDto;
 import com.example.dotheG.exception.CustomException;
@@ -30,7 +31,7 @@ public class ReportService {
     private final MemberActivityRepository memberActivityRepository;
     private final StepRepository stepRepository;
     private final MonthReportRepository monthReportRepository;
-    private final StepService stepService;
+    private final CarbonRankingRepository carbonRankingRepository;
 
     // 주간 보고서 저장
     @Transactional // 매주 일요일 23:30 실행
@@ -193,5 +194,54 @@ public class ReportService {
                 activityCounts         // 각 인증별 횟수
         );
     }
+
+    // 탄소 절감량 계산 메서드
+    public double getCarbonReduction(int stepCount) {
+        double temp = (stepCount / 1000.0) * 150;  // 1000보당 150g 절약
+        return temp / 1000.0;                      // kg로 환산
+    }
+
+    // 매달 마지막 날: CarbonRanking 초기화
+    @Transactional
+    public void resetCarbonRanking() {
+        carbonRankingRepository.resetUserCounts(); // 모든 userCount를 0으로 초기화
+    }
+
+    // 탄소 절감량 분포 업데이트
+    @Transactional
+    public void updateCarbonRanking() {
+        List<MonthReport> monthReports = monthReportRepository.findAll();
+
+        for (MonthReport report : monthReports) {
+            int steps = report.getMonthlyTotalSteps();
+            double carbonReduction = getCarbonReduction(steps);
+
+            String range = getRangeForCarbonReduction(carbonReduction);
+            carbonRankingRepository.incrementUserCountByRange(range);
+        }
+    }
+
+    // 탄소 절감량에 따른 range 반환
+    private String getRangeForCarbonReduction(double carbonReduction) {
+        if (carbonReduction < 10) return "0 ~ 10kg";
+        if (carbonReduction < 20) return "10 ~ 20kg";
+        if (carbonReduction < 30) return "20 ~ 30kg";
+        if (carbonReduction < 40) return "30 ~ 40kg";
+        if (carbonReduction < 50) return "40 ~ 50kg";
+        return "50kg 이상";
+    }
+
+    // 탄소 배출량 분포 조회
+    @Transactional(readOnly = true)
+    public List<CarbonRankingDto> getCarbonRankingGraph() {
+        return carbonRankingRepository.findAll()
+                .stream()
+                .map(carbonRanking -> new CarbonRankingDto(
+                        carbonRanking.getRange(),
+                        carbonRanking.getUserCount()
+                ))
+                .collect(Collectors.toList());
+    }
+
 
 }

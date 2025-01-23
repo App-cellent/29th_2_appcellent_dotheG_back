@@ -1,5 +1,6 @@
 package com.example.dotheG.controller;
 
+import com.example.dotheG.dto.CarbonRankingDto;
 import com.example.dotheG.dto.report.MonthlyReportResponseDto;
 import com.example.dotheG.dto.Response;
 import com.example.dotheG.dto.report.WeeklyReportResponseDto;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/reports")
@@ -45,5 +48,12 @@ public class ReportController {
     public Response<MonthlyReportResponseDto> getMonthlyReport() {
         MonthlyReportResponseDto monthlyReport = reportService.getMonthlyReport();
         return Response.success("월간 보고서 조회 성공", monthlyReport);
+    }
+
+    // 탄소 배출량 전체 분포 조회
+    @GetMapping("/carbon/graph")
+    public Response<List<CarbonRankingDto>> getCarbonRankingGraph() {
+        List<CarbonRankingDto> carbonRankingGraph = reportService.getCarbonRankingGraph();
+        return Response.success("탄소 배출량 분포 조회 성공", carbonRankingGraph);
     }
 }
