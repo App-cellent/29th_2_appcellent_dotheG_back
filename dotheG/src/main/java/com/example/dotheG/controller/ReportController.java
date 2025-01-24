@@ -3,6 +3,7 @@ package com.example.dotheG.controller;
 import com.example.dotheG.dto.report.CarbonRankingDto;
 import com.example.dotheG.dto.report.MonthlyReportResponseDto;
 import com.example.dotheG.dto.Response;
+import com.example.dotheG.dto.report.MyCarbonRankingDto;
 import com.example.dotheG.dto.report.WeeklyReportResponseDto;
 import com.example.dotheG.service.ReportService;
 import org.springframework.http.ResponseEntity;
@@ -51,11 +52,18 @@ public class ReportController {
         return Response.success("월간 보고서 조회 성공", monthlyReport);
     }
 
-    // 탄소 배출량 전체 분포 조회
+    // 탄소 절감량 전체 분포 조회
     @GetMapping("/carbon/graph")
     public Response<List<CarbonRankingDto>> getCarbonRankingGraph() {
         List<CarbonRankingDto> carbonRankingGraph = reportService.getCarbonRankingGraph();
         return Response.success("탄소 배출량 분포 조회 성공", carbonRankingGraph);
+    }
+
+    // 탄소 절감량 랭킹 조회
+    @GetMapping("/carbon/ranking")
+    public ResponseEntity<?> getUserCarbonRanking() {
+        MyCarbonRankingDto myCarbonRankingDto = reportService.getUserCarbonRanking();
+        return ResponseEntity.ok(Response.success("탄소 배출량 랭킹 조회 성공", myCarbonRankingDto));
     }
 
     // resetCarbonRanking 테스트 API

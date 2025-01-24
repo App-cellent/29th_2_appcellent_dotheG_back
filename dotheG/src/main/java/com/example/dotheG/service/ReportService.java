@@ -2,6 +2,7 @@ package com.example.dotheG.service;
 
 import com.example.dotheG.dto.report.CarbonRankingDto;
 import com.example.dotheG.dto.report.MonthlyReportResponseDto;
+import com.example.dotheG.dto.report.MyCarbonRankingDto;
 import com.example.dotheG.dto.report.WeeklyReportResponseDto;
 import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.exception.ErrorCode;
@@ -15,6 +16,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -271,6 +273,47 @@ public class ReportService {
                         carbonRanking.getUserCount()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    // 사용자 탄소 배출량 랭킹 조회
+    @Transactional(readOnly = true)
+    public MyCarbonRankingDto getUserCarbonRanking() {
+        // 1. 현재 사용자 조회
+        Member currentUser = memberService.getCurrentMember();
+        if (currentUser == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        String userName = currentUser.getUserName(); // 사용자 이름
+
+        // 2. 지난 달의 시작일과 종료일 계산
+        LocalDate now = LocalDate.now();
+        LocalDate firstDayOfLastMonth = now.minusMonths(1).withDayOfMonth(1);
+        LocalDate lastDayOfLastMonth = now.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+
+        // 3. 현재 사용자의 지난 달 월간 보고서 조회
+        MonthReport userReport = monthReportRepository.findByUserIdAndReportMonth(currentUser, firstDayOfLastMonth)
+                .orElseThrow(() -> new CustomException(ErrorCode.REPORT_NOT_FOUND));
+
+        int userSteps = userReport.getMonthlyTotalSteps();
+        double userCarbonReduction = getCarbonReduction(userSteps);
+
+        // 4. 지난 달 모든 사용자 월간 보고서 조회 및 정렬
+        List<MonthReport> reports = monthReportRepository.findByReportMonthBetween(firstDayOfLastMonth, lastDayOfLastMonth);
+        List<Double> allCarbonReductions = reports.stream()
+                .map(report -> getCarbonReduction(report.getMonthlyTotalSteps()))
+                .sorted(Comparator.reverseOrder()) // 내림차순 정렬
+                .collect(Collectors.toList());
+
+        // 5. 사용자 탄소 절감량 상위 %
+        int userRank = allCarbonReductions.indexOf(userCarbonReduction) + 1; // 1-based index
+        double userPercentage = ((double) userRank / allCarbonReductions.size()) * 100;
+
+        // 6. 사용자 탄소 절감량 Range 확인
+        String userRange = getRangeForCarbonReduction(userCarbonReduction);
+
+        // 7. 결과 반환
+        return new MyCarbonRankingDto(userName, userPercentage, userRange);
     }
 
 
