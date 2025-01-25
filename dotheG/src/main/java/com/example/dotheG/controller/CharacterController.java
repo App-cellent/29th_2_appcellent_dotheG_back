@@ -27,10 +27,9 @@ public class CharacterController {
     // 캐릭터 도감 조회
     @GetMapping("/collection")
     public Response<List<CharacterDto>> getCharacterCollection(
-            @RequestParam Long userId,
             @RequestParam(required = false, defaultValue = "ALL") String viewType
     ) {
-        List<CharacterDto> characters = characterService.getCharacterCollection(userId, viewType);
+        List<CharacterDto> characters = characterService.getCharacterCollection(viewType);
         return Response.success("캐릭터 도감 조회 성공", characters);
     }
 
