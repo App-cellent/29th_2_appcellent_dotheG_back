@@ -92,14 +92,16 @@ public class CharacterService {
     }
 
     // 캐릭터 도감 조회
-    public List<CharacterDto> getCharacterCollection(Long userId, String viewType) {
-        // 1. 사용자 보유 캐릭터 조회
-        if (userId == null) {
-            throw new CustomException(ErrorCode.MISSING_USER_ID);
-        }
-        List<MemberCharacter> ownedCharacters = memberCharacterRepository.findByUserInfoId_UserId(userId);
+    public List<CharacterDto> getCharacterCollection(String viewType) {
+        // 1. 현재 사용자 정보 가져오기
+        Member member = memberService.getCurrentMember();
+        MemberInfo userInfo = memberInfoRepository.findByUserId(member)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. 필터링 조건 설정
+        // 2. 사용자 보유 캐릭터 조회
+        List<MemberCharacter> ownedCharacters = memberCharacterRepository.findByUserInfoId_UserId(userInfo.getUserInfoId());
+
+        // 3. 필터링 조건 설정
         if (!isValidViewType(viewType)) {
             throw new CustomException(ErrorCode.INVALID_VIEW_TYPE);
         }
