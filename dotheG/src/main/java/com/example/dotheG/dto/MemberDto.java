@@ -1,28 +1,30 @@
 package com.example.dotheG.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 public class MemberDto {
 
-    private final String userName;
+    private String userName;
 
-    private final String userLogin;
+    private String userLogin;
 
     private String userPassword;
 
-    private final boolean available;
+    private boolean available;
 
-    private final boolean isSocial;
+    private boolean isSocial;
 
-    private final String role;
+    private String role = "USER";
 
-    public MemberDto(String userLogin, String userName, String userPassword) {
+    @Builder
+    public MemberDto(String userLogin, String userName, String userPassword, boolean available, boolean isSocial, String role) {
         this.userName = userName;
         this.userLogin = userLogin;
         this.userPassword = userPassword;
-        this.available = true;
-        this.isSocial = false;
-        this.role = "USER";
+        this.available = available;
+        this.isSocial = isSocial;
+        this.role = role;
     }
 }

@@ -25,18 +25,21 @@ public class Member {
 
     private String role;
 
+    private String email;
+
     private boolean Noti;
 
     private boolean tutorial;
 
     @Builder
-    public Member(String userName, String userLogin ,String userPassword, boolean available, boolean isSocial, String role, boolean Noti, boolean tutorial) {
+    public Member(String userName, String userLogin ,String userPassword, boolean available, boolean isSocial, String role, String email, boolean Noti, boolean tutorial) {
         this.userName = userName;
         this.userLogin = userLogin;
         this.userPassword = userPassword;
         this.available = available;
         this.isSocial = isSocial;
         this.role = role;
+        this.email = email;
         this.Noti = Noti;
         this.tutorial = tutorial;
     }
@@ -55,5 +58,11 @@ public class Member {
 
     public void changeTutorial(){
         this.tutorial = true;
+    }
+
+    //Role 추가?
+    public void updateSocialMember( String userName, String email) {
+        this.userName = userName;
+        this.email = email;
     }
 }
