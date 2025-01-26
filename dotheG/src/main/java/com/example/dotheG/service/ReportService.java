@@ -16,6 +16,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +131,7 @@ public class ReportService {
         }
     }
 
-    // 월간 보고서 저장
+    // 월간 보고서 저장 (매달 마지막 날 23:30)
     @Transactional
     public void saveMonthlyReport() {
         // 사용자 정보 조회
@@ -155,32 +156,56 @@ public class ReportService {
         );
         int monthlyTotalCertifications = activities.size();
 
-        // 지난 달 모든 사용자 월간 보고서 조회 및 정렬
-        List<MonthReport> allReports = monthReportRepository.findByReportMonthBetween(firstDayOfLastMonth, lastDayOfLastMonth);
-        List<Double> allCarbonReductions = allReports.stream()
-                .map(report -> getCarbonReduction(report.getMonthlyTotalSteps()))
-                .sorted(Comparator.reverseOrder()) // 내림차순 정렬
-                .collect(Collectors.toList());
-
-        // 현재 사용자의 탄소 절감량
-        double userCarbonReduction = getCarbonReduction(monthlyTotalSteps);
-
-        // 사용자 랭킹 및 상위 %
-        int userRank = allCarbonReductions.indexOf(userCarbonReduction) + 1;
-        int userPercentage = (int) Math.round(((double) userRank / (allReports.size() + 1)) * 100);
-
-        String userRange = getRangeForCarbonReduction(userCarbonReduction);
-
         MonthReport monthReport = new MonthReport(
                 member,
                 firstDayOfLastMonth,
                 monthlyTotalSteps,
                 monthlyTotalCertifications,
-                userPercentage,
-                userRange
+                0, // 초기값: 0
+                null // 초기값: null
         );
 
         monthReportRepository.save(monthReport);
+    }
+
+    // 월간 보고서 userPercentage, userRange 업데이트 (매달 마지막 날 23:50)
+    @Transactional
+    public void updateMonthlyReports() {
+        LocalDate now = LocalDate.now();
+        LocalDate firstDayOfLastMonth = now.minusMonths(1).withDayOfMonth(1);
+        LocalDate lastDayOfLastMonth = now.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+
+        // 1. 데이터 로드
+        List<MonthReport> reports = monthReportRepository.findByReportMonthBetween(firstDayOfLastMonth, lastDayOfLastMonth);
+        System.out.println("Loaded Reports: " + reports.size());
+
+        if (reports.isEmpty()) {
+            System.out.println("No reports found for the given month range.");
+            return; // 데이터가 없으면 종료
+        }
+
+        // 2. 모든 사용자 탄소 절감량 계산 및 정렬
+        List<Double> reductions = reports.stream()
+                .map(r -> getCarbonReduction(r.getMonthlyTotalSteps()))
+                .sorted(Comparator.reverseOrder())
+                .toList();
+        System.out.println("Reductions List: " + reductions);
+
+        // 3. 각 사용자 보고서 업데이트
+        for (MonthReport report : reports) {
+            double reduction = getCarbonReduction(report.getMonthlyTotalSteps());
+            int rank = reductions.indexOf(reduction) + 1;
+            int percentage = (int) Math.round((rank / (double) reductions.size()) * 100);
+            String range = getRangeForCarbonReduction(reduction);
+
+            System.out.println("Updating Report: " + report.getMonthReportId() + ", Reduction: " + reduction + ", Rank: " + rank + ", Percentage: " + percentage + ", Range: " + range);
+
+            report.updateCarbonInfo(percentage, range);
+        }
+
+        // 4. 저장
+        monthReportRepository.saveAll(reports);
+        System.out.println("Reports updated successfully.");
     }
 
     // 월간 보고서 조회
@@ -243,13 +268,13 @@ public class ReportService {
         return temp / 1000.0;                      // kg로 환산
     }
 
-    // 매달 마지막 날: CarbonRanking 초기화
+    // 탄소 절감량 분포 초기화 (매달 마지막 날 23:30)
     @Transactional
     public void resetCarbonRanking() {
         carbonRankingRepository.resetUserCounts(); // 모든 userCount를 0으로 초기화
     }
 
-    // 탄소 절감량 분포 업데이트
+    // 탄소 절감량 분포 업데이트 (매달 마지막 날 23:40)
     @Transactional
     public void updateCarbonRanking() {
         // 모든 사용자 월간 보고서 데이터 가져오기
@@ -285,46 +310,29 @@ public class ReportService {
     // 탄소 배출량 분포 조회
     @Transactional(readOnly = true)
     public List<CarbonRankingDto> getCarbonRankingGraph() {
-        return carbonRankingRepository.findAll()
-                .stream()
-                .map(carbonRanking -> new CarbonRankingDto(
-                        carbonRanking.getRange(),
-                        carbonRanking.getUserCount()
+        // 고정된 range 목록 정의
+        List<String> predefinedRanges = Arrays.asList(
+                "0 ~ 5kg", "5 ~ 10kg", "10 ~ 15kg", "15 ~ 20kg",
+                "20 ~ 25kg", "25 ~ 30kg", "30 ~ 35kg", "35 ~ 40kg",
+                "40 ~ 45kg", "45 ~ 50kg", "50kg 이상"
+        );
+
+        // 데이터베이스에서 조회
+        List<CarbonRanking> existingRankings = carbonRankingRepository.findAll();
+
+        // Map으로 변환하여 기존 데이터 확인
+        Map<String, Integer> rangeToCountMap = existingRankings.stream()
+                .collect(Collectors.toMap(CarbonRanking::getRange, CarbonRanking::getUserCount));
+
+        // 모든 구간을 포함하도록 데이터 생성
+        List<CarbonRankingDto> result = predefinedRanges.stream()
+                .map(range -> new CarbonRankingDto(
+                        range,
+                        rangeToCountMap.getOrDefault(range, 0) // 값이 없으면 0으로 설정
                 ))
                 .collect(Collectors.toList());
-    }
 
-    // 월간 보고서 업데이트 (탄소 절감량 상위 %, 속한 구간 계산)
-    @Transactional
-    public void updateMonthlyReports() {
-        LocalDate now = LocalDate.now();
-        LocalDate firstDayOfLastMonth = now.minusMonths(1).withDayOfMonth(1);
-        LocalDate lastDayOfLastMonth = now.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
-
-        // 지난 달의 모든 월간 보고서 조회
-        List<MonthReport> reports = monthReportRepository.findByReportMonthBetween(firstDayOfLastMonth, lastDayOfLastMonth);
-
-        // 모든 사용자 탄소 절감량 계산 및 정렬
-        List<Double> reductions = reports.stream()
-                .map(r -> getCarbonReduction(r.getMonthlyTotalSteps()))
-                .sorted(Comparator.reverseOrder()).toList();
-
-        for (MonthReport report : reports) {
-            // 탄소 절감량 계산
-            double reduction = getCarbonReduction(report.getMonthlyTotalSteps());
-
-            // 사용자 순위 계산
-            int rank = reductions.indexOf(reduction) + 1;
-            int percentage = (int) Math.round((rank / (double) reductions.size()) * 100);
-
-            // Range 계산
-            String range = getRangeForCarbonReduction(reduction);
-
-            // 업데이트
-            report.updateCarbonInfo(percentage, range);
-        }
-
-        monthReportRepository.saveAll(reports);
+        return result;
     }
 
 }

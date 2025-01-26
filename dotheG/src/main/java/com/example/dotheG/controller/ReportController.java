@@ -56,7 +56,7 @@ public class ReportController {
     @GetMapping("/carbon/graph")
     public Response<List<CarbonRankingDto>> getCarbonRankingGraph() {
         List<CarbonRankingDto> carbonRankingGraph = reportService.getCarbonRankingGraph();
-        return Response.success("탄소 배출량 분포 조회 성공", carbonRankingGraph);
+        return Response.success("탄소 절감량 분포 조회 성공", carbonRankingGraph);
     }
 
     // resetCarbonRanking 테스트 API
@@ -71,5 +71,12 @@ public class ReportController {
     public ResponseEntity<String> updateCarbonRanking() {
         reportService.updateCarbonRanking();
         return ResponseEntity.ok("Carbon Ranking update completed!");
+    }
+
+    // updateMonthlyReports 테스트 API
+    @PostMapping("/update-monthly-reports")
+    public ResponseEntity<String> updateMonthlyReports() {
+        reportService.updateMonthlyReports();
+        return ResponseEntity.ok("Monthly Reports update completed!");
     }
 }
