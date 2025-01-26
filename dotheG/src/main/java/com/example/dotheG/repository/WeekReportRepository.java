@@ -10,8 +10,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public interface WeekReportRepository extends JpaRepository<WeekReport, Long> {
-    @Query(value = "SELECT COUNT(*) > 0 FROM week_report WHERE user_id = :userId AND week_start_date = :startDate AND week_end_date = :endDate", nativeQuery = true)
-    boolean existsByUserAndWeekRange(
+    @Query(value = "SELECT COUNT(*) FROM week_report WHERE user_id = :userId AND week_start_date = :startDate AND week_end_date = :endDate", nativeQuery = true)
+    int countByUserAndWeekRange(
             @Param("userId") Long userId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
