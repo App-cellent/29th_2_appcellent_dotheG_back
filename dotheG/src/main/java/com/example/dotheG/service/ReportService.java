@@ -49,7 +49,7 @@ public class ReportService {
         LocalDate lastWeekSunday = lastWeekMonday.plusDays(6);
 
         // 동일한 사용자와 기간의 주간 보고서가 이미 존재하는지 확인
-        boolean exists = weekReportRepository.existsByUserAndWeekRange(member, lastWeekMonday, lastWeekSunday);
+        boolean exists = weekReportRepository.existsByUserAndWeekRange(member.getUserId(), lastWeekMonday, lastWeekSunday);
         if (exists) {
             return; // 이미 주간 보고서가 존재하면 저장하지 않음
         }
