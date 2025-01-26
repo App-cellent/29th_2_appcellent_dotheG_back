@@ -12,6 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Table(name = "week_report")
 public class WeekReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
