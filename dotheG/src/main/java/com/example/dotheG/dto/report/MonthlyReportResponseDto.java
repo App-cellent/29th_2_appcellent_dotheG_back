@@ -14,4 +14,6 @@ public class MonthlyReportResponseDto {
     private double treesSaved; // 탄소 절감량
     private int monthlyTotalCertifications;    // 총 인증 횟수
     private Map<String, Long> activityCounts;  // 세부 인증 횟수
+    private int userPercentage; // 사용자 탄소 절감량 상위 %
+    private String userRange; // 사용자 탄소 절감량 Range
 }

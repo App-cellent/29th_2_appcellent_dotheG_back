@@ -59,13 +59,6 @@ public class ReportController {
         return Response.success("탄소 배출량 분포 조회 성공", carbonRankingGraph);
     }
 
-    // 탄소 절감량 랭킹 조회
-    @GetMapping("/carbon/ranking")
-    public ResponseEntity<?> getUserCarbonRanking() {
-        MyCarbonRankingDto myCarbonRankingDto = reportService.getUserCarbonRanking();
-        return ResponseEntity.ok(Response.success("탄소 배출량 랭킹 조회 성공", myCarbonRankingDto));
-    }
-
     // resetCarbonRanking 테스트 API
     @PostMapping("/reset-carbon-ranking")
     public ResponseEntity<String> resetCarbonRanking() {

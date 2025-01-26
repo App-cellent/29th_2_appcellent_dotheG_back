@@ -56,4 +56,7 @@ public class ScheduleTask {
 
     @Scheduled(cron = "0 40 23 L * ?", zone = "Asia/Seoul") // 매달 마지막 날 23:40 실행
     public void updateCarbonRanking() {reportService.updateCarbonRanking();}
+
+    @Scheduled(cron = "0 50 23 L * ?", zone = "Asia/Seoul") // 매달 마지막 날 23:50 실행
+    public void updateMonthlyReports() {reportService.updateMonthlyReports();}
 }
