@@ -64,7 +64,16 @@ public class MemberService {
 
         MemberQuiz memberQuiz = new MemberQuiz(member);
         memberQuizRepository.save(memberQuiz);
+    }
 
+    public boolean checkUserLogin(String userLogin) {
+        log.info("중복확인한 아이디: {}", userLogin);
+        return !memberRepository.existsByUserLogin(userLogin);
+    }
+
+    public boolean checkUserName(String userName) {
+        log.info("중복확인한 사용자 이름: {}", userName);
+        return !memberRepository.existsByUserName(userName);
     }
 
     public Member getCurrentMember(){
