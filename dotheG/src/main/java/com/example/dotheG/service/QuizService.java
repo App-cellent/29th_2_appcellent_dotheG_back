@@ -1,6 +1,7 @@
 package com.example.dotheG.service;
 
-import com.example.dotheG.dto.QuizResponseDto;
+import com.example.dotheG.dto.quiz.QuizResponseDto;
+import com.example.dotheG.dto.quiz.QuizSolDto;
 import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Member;
@@ -59,13 +60,18 @@ public class QuizService {
     }
 
     // 퀴즈 풀기
-    public String solve(String myAnswer){
+    public Object solve(String myAnswer){
         Member member = memberService.getCurrentMember();
         MemberInfo memberInfo = memberService.getCurrentMemberInfo();
 
         // 퀴즈 조회
         Quiz quiz = quizRepository.findByQuizDate(LocalDate.now()).orElseThrow(() -> new CustomException(ErrorCode.QUIZ_NOT_FOUND));
         String quizAnswer = quiz.getQuizAnswer();
+
+        QuizSolDto quizSolDto = new QuizSolDto(
+                quiz.getQuizSol(),
+                quiz.getQuizSolImage()
+        );
 
         // 멤버퀴즈 조회
         Long memberId = member.getUserId();
@@ -77,13 +83,13 @@ public class QuizService {
             throw new CustomException(ErrorCode.MYANSWER_NOT_FOUND);
         } else if (myAnswer.equals(quizAnswer)){
             memberInfo.addReward(2);
-            memberQuiz.updateStatus(quiz, myAnswer.equals(quizAnswer), true);
+            memberQuiz.updateStatus(quiz, true, true);
             memberQuizRepository.save(memberQuiz);
             return "정답입니다.";
         } else {
-            memberQuiz.updateStatus(quiz, myAnswer.equals(quizAnswer), true);
+            memberQuiz.updateStatus(quiz, false, true);
             memberQuizRepository.save(memberQuiz);
-            return quiz.getQuizSol();
+            return quizSolDto;
         }
     }
 }
