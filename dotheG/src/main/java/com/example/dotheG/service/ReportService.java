@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
@@ -81,6 +82,9 @@ public class ReportService {
     // 주간 보고서 조회
     @Transactional(readOnly = true)
     public WeeklyReportResponseDto getWeeklyReport() {
+        // 현재 시간이 제한 시간 내인지 확인
+        checkWeeklyReportTimeRestriction();
+
         // 사용자 정보 조회
         Member member = memberService.getCurrentMember();
         if (member == null) {
@@ -211,6 +215,9 @@ public class ReportService {
     // 월간 보고서 조회
     @Transactional(readOnly = true)
     public MonthlyReportResponseDto getMonthlyReport() {
+        // 현재 시간이 제한 시간 내인지 확인
+        checkMonthlyReportTimeRestriction();
+
         // 사용자 정보 조회
         Member member = memberService.getCurrentMember();
         if (member == null) {
@@ -260,6 +267,30 @@ public class ReportService {
                 monthReport.getUserPercentage(),
                 monthReport.getUserRange()
         );
+    }
+
+    // 주간 보고서 시간 제한 확인
+    private void checkWeeklyReportTimeRestriction() {
+        LocalTime now = LocalTime.now();
+        DayOfWeek day = LocalDate.now().getDayOfWeek();
+
+        // 매주 일요일 밤 11:30 ~ 월요일 0:00 제한
+        if (day == DayOfWeek.SUNDAY && now.isAfter(LocalTime.of(23, 30)) ||
+                day == DayOfWeek.MONDAY && now.isBefore(LocalTime.of(0, 0))) {
+            throw new CustomException(ErrorCode.TIME_RESTRICTION_WEEKLY);
+        }
+    }
+
+    // 월간 보고서 시간 제한 확인
+    private void checkMonthlyReportTimeRestriction() {
+        LocalTime now = LocalTime.now();
+        LocalDate today = LocalDate.now();
+
+        // 매달 마지막 날 밤 11:30 ~ 자정 제한
+        LocalDate lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
+        if (today.equals(lastDayOfMonth) && now.isAfter(LocalTime.of(23, 30)) && now.isBefore(LocalTime.of(23, 59))) {
+            throw new CustomException(ErrorCode.TIME_RESTRICTION_MONTHLY);
+        }
     }
 
     // 탄소 절감량 계산 메서드
