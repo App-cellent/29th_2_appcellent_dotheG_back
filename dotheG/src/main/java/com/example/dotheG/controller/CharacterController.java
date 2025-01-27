@@ -41,7 +41,7 @@ public class CharacterController {
     }
 
     // 대표 캐릭터 지정
-    @PostMapping("/main/set")
+    @PutMapping("/main/set")
     public Response<String> setMainCharacter(@RequestBody SetMainCharacterDto request) {
         characterService.setMainCharacter(request.getCharacterId());
         return Response.success("대표 캐릭터 지정 성공", null);
