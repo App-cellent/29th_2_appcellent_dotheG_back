@@ -16,8 +16,8 @@ public interface CarbonRankingRepository extends JpaRepository<CarbonRanking, Lo
     @Query("UPDATE CarbonRanking c SET c.userCount = 0")
     void resetUserCounts();
 
-    // 특정 range의 userCount를 1 증가
+    // 특정 carbonRange의 userCount를 1 증가
     @Modifying
-    @Query("UPDATE CarbonRanking cr SET cr.userCount = cr.userCount + 1 WHERE cr.range = :range")
-    void incrementUserCountByRange(@Param("range") String range);
+    @Query("UPDATE CarbonRanking cr SET cr.userCount = cr.userCount + 1 WHERE cr.carbonRange = :carbonRange")
+    void incrementUserCountByRange(@Param("carbonRange") String carbonRange);
 }

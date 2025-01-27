@@ -20,7 +20,7 @@ public class CarbonRanking {
     @JoinColumn(name = "MONTH_REPORT_ID")
     private MonthReport monthReportId;
 
-    private String range;
+    private String carbonRange;
 
     private int userCount;
 }

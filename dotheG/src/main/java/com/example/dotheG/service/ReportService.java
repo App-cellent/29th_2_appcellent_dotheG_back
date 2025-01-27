@@ -196,11 +196,11 @@ public class ReportService {
             double reduction = getCarbonReduction(report.getMonthlyTotalSteps());
             int rank = reductions.indexOf(reduction) + 1;
             int percentage = (int) Math.round((rank / (double) reductions.size()) * 100);
-            String range = getRangeForCarbonReduction(reduction);
+            String carbonRange = getRangeForCarbonReduction(reduction);
 
-            System.out.println("Updating Report: " + report.getMonthReportId() + ", Reduction: " + reduction + ", Rank: " + rank + ", Percentage: " + percentage + ", Range: " + range);
+            System.out.println("Updating Report: " + report.getMonthReportId() + ", Reduction: " + reduction + ", Rank: " + rank + ", Percentage: " + percentage + ", Range: " + carbonRange);
 
-            report.updateCarbonInfo(percentage, range);
+            report.updateCarbonInfo(percentage, carbonRange);
         }
 
         // 4. 저장
@@ -285,10 +285,10 @@ public class ReportService {
             double carbonReduction = getCarbonReduction(steps);
 
             // 탄소 절감량에 따른 range 결정
-            String range = getRangeForCarbonReduction(carbonReduction);
+            String carbonRange = getRangeForCarbonReduction(carbonReduction);
 
             // 해당 range의 userCount 증가
-            carbonRankingRepository.incrementUserCountByRange(range);
+            carbonRankingRepository.incrementUserCountByRange(carbonRange);
         }
     }
 
@@ -322,7 +322,7 @@ public class ReportService {
 
         // Map으로 변환하여 기존 데이터 확인
         Map<String, Integer> rangeToCountMap = existingRankings.stream()
-                .collect(Collectors.toMap(CarbonRanking::getRange, CarbonRanking::getUserCount));
+                .collect(Collectors.toMap(CarbonRanking::getCarbonRange, CarbonRanking::getUserCount));
 
         // 모든 구간을 포함하도록 데이터 생성
         List<CarbonRankingDto> result = predefinedRanges.stream()
@@ -334,6 +334,4 @@ public class ReportService {
 
         return result;
     }
-
-
 }
