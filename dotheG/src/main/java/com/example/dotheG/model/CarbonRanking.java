@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Table(name = "carbon_ranking")
 public class CarbonRanking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
