@@ -2,7 +2,6 @@ package com.example.dotheG.service;
 
 import com.example.dotheG.dto.report.CarbonRankingDto;
 import com.example.dotheG.dto.report.MonthlyReportResponseDto;
-import com.example.dotheG.dto.report.MyCarbonRankingDto;
 import com.example.dotheG.dto.report.WeeklyReportResponseDto;
 import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.exception.ErrorCode;
