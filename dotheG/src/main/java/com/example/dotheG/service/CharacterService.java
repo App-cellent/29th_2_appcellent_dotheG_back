@@ -1,9 +1,6 @@
 package com.example.dotheG.service;
 
-import com.example.dotheG.dto.character.CharacterDto;
-import com.example.dotheG.dto.character.DrawDto;
-import com.example.dotheG.dto.character.DrawResponseDto;
-import com.example.dotheG.dto.character.MainCharacterResponseDto;
+import com.example.dotheG.dto.character.*;
 import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Character;
@@ -13,13 +10,13 @@ import com.example.dotheG.model.MemberInfo;
 import com.example.dotheG.repository.CharacterRepository;
 import com.example.dotheG.repository.MemberCharacterRepository;
 import com.example.dotheG.repository.MemberInfoRepository;
-import com.example.dotheG.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
@@ -101,17 +98,28 @@ public class CharacterService {
         // 2. 사용자 보유 캐릭터 조회
         List<MemberCharacter> ownedCharacters = memberCharacterRepository.findByUserInfoId_UserId(userInfo.getUserInfoId());
 
-        // 3. 필터링 조건 설정
+        // 3. 사용자가 보유한 캐릭터 ID를 추출
+        Set<Long> ownedCharacterIds = ownedCharacters.stream()
+                .map(memberCharacter -> memberCharacter.getCharId().getCharId())
+                .collect(Collectors.toSet());
+
+        // 4. 전체 캐릭터 조회
+        List<Character> allCharacters = characterRepository.findAll();
+
+        // 5. 필터링 조건 확인
         if (!isValidViewType(viewType)) {
             throw new CustomException(ErrorCode.INVALID_VIEW_TYPE);
         }
-        return ownedCharacters.stream()
-                .filter(memberCharacter -> filterByViewType(memberCharacter.getCharId().getCharRarity(), viewType))
-                .map(memberCharacter -> new CharacterDto(
-                        memberCharacter.getCharId().getCharId(),
-                        memberCharacter.getCharId().getCharName(),
-                        memberCharacter.getCharId().getCharRarity(),
-                        memberCharacter.getCharId().getCharImageUrl()
+
+        // 6. 해당 viewType에 맞는 캐릭터 반환
+        return allCharacters.stream()
+                .filter(character -> viewType.equalsIgnoreCase("ALL") || filterByViewType(character.getCharRarity(), viewType)) // ALL이면 모든 캐릭터, 아니면 필터링
+                .map(character -> new CharacterDto(
+                        character.getCharId(),
+                        character.getCharName(),
+                        character.getCharRarity(),
+                        character.getCharImageUrl(),
+                        ownedCharacterIds.contains(character.getCharId()) // 보유 여부 확인
                 ))
                 .collect(Collectors.toList());
     }
@@ -145,7 +153,8 @@ public class CharacterService {
                 character.getCharId(),
                 character.getCharName(),
                 character.getCharRarity(),
-                character.getCharImageUrl()
+                character.getCharImageUrl(),
+                true
         );
     }
 

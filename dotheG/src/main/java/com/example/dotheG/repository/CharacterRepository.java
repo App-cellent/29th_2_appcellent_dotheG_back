@@ -15,8 +15,9 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
         ORDER BY CASE
             WHEN CHAR_RARITY = 1 THEN RAND() * 35
             WHEN CHAR_RARITY = 2 THEN RAND() * 30
-            WHEN CHAR_RARITY = 3 THEN RAND() * 25
+            WHEN CHAR_RARITY = 3 THEN RAND() * 20
             WHEN CHAR_RARITY = 4 THEN RAND() * 10
+            WHEN CHAR_RARITY = 0 THEN RAND() * 5
         END DESC LIMIT 1
     """, nativeQuery = true)
     Character findRandomCharacterByWeightedRarity();
