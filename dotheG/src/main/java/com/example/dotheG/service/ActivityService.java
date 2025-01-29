@@ -142,7 +142,7 @@ public class ActivityService {
 
         // ActivityResponseDto 리스트로 변환
         return activities.stream()
-                .map(activity -> new ActivityResponseDto(activity.getActivityName(), activity.getActivityImage()))
+                .map(activity -> new ActivityResponseDto(activity.getUserActivityId(), activity.getActivityName(), activity.getActivityImage()))
                 .collect(Collectors.toList());  // 활동이 있을 경우 리스트 반환
     }
 
