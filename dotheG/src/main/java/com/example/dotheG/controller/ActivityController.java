@@ -1,13 +1,12 @@
 package com.example.dotheG.controller;
 
-import com.example.dotheG.dto.ActivityResponseDto;
+import com.example.dotheG.dto.activity.ActivityListResponse;
 import com.example.dotheG.dto.Response;
 import com.example.dotheG.service.ActivityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -41,7 +40,7 @@ public class ActivityController {
 
     // 오늘의 인증 조회하기
     @GetMapping("/viewToday")
-    public Response<List<ActivityResponseDto>> viewToday() {
+    public Response<ActivityListResponse> viewToday() {
         return Response.success("오늘 인증 기록 조회", activityService.viewToday());
     }
 }

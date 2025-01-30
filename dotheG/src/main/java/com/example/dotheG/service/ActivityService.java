@@ -3,7 +3,8 @@ package com.example.dotheG.service;
 //import org.opencv.core.*;
 //import org.opencv.imgproc.Imgproc;
 
-import com.example.dotheG.dto.ActivityResponseDto;
+import com.example.dotheG.dto.activity.ActivityListResponse;
+import com.example.dotheG.dto.activity.ActivityResponseDto;
 import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Activity;
@@ -129,8 +130,9 @@ public class ActivityService {
         ));
     }
 
-    public List<ActivityResponseDto> viewToday() {
+    public ActivityListResponse viewToday() {
         Member member = memberService.getCurrentMember();
+        Long userId = member.getUserId();
 
         // 사용자 ID와 날짜에 해당하는 member_activity를 불러오기
         List<MemberActivity> activities = memberActivityRepository.findByUserIdAndActivityDate(member, LocalDate.now());
@@ -140,10 +142,12 @@ public class ActivityService {
             // Todo 이거 false 메세지가 아니라 true(활동 없음)로 출력할 수 있어야하나?
         }
 
-        // ActivityResponseDto 리스트로 변환
-        return activities.stream()
-                .map(activity -> new ActivityResponseDto(activity.getUserActivityId(), activity.getActivityName(), activity.getActivityImage()))
+        List<ActivityResponseDto> activityResponseDtos = activities.stream()
+                .map(activity -> new ActivityResponseDto(activity.getActivityId().getActivityId(), activity.getActivityName(), activity.getActivityImage()))
                 .collect(Collectors.toList());  // 활동이 있을 경우 리스트 반환
+
+        // ActivityResponseDto 리스트로 변환
+        return new ActivityListResponse(userId, activities.size(), activityResponseDtos);
     }
 
 }
