@@ -51,6 +51,11 @@ public class MainpageService {
         );
     }
 
+    public boolean getTutorial(){
+        Member member = memberService.getCurrentMember();
+        return member.isTutorial();
+    }
+
     @Transactional
     public void changeTutorial(){
         Member member = memberService.getCurrentMember();

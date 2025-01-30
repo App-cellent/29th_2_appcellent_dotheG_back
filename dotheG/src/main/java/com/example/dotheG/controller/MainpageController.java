@@ -22,10 +22,14 @@ public class MainpageController {
         return Response.success("메인페이지 불러오기 성공", mainpageService.getInfo());
     }
 
+    @GetMapping("/isTutorial")
+    public Response<Object> getTutorial(){
+        return Response.success("튜토리얼 진행 여부를 반환합니다.", mainpageService.getTutorial());
+    }
+
     @PostMapping("/tutorial")
     public Response<?> changeTutorial(){
         mainpageService.changeTutorial();
         return Response.success("튜토리얼 진행 했습니다.", null);
     }
-
 }
