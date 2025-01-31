@@ -2,8 +2,12 @@ package com.example.dotheG.config.jwt;
 
 import com.example.dotheG.dto.LoginDto;
 import com.example.dotheG.dto.Response;
+import com.example.dotheG.model.Member;
 import com.example.dotheG.model.Refresh;
+import com.example.dotheG.model.Withdraw;
+import com.example.dotheG.repository.MemberRepository;
 import com.example.dotheG.repository.RefreshRepository;
+import com.example.dotheG.repository.WithdrawRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
@@ -25,19 +29,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Optional;
 
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-
+    private MemberRepository memberRepository;
     private RefreshRepository refreshRepository;
+    private WithdrawRepository withdrawRepository;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, RefreshRepository refreshRepository) {
+    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, MemberRepository memberRepository, RefreshRepository refreshRepository, WithdrawRepository withdrawRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.memberRepository = memberRepository;
         this.refreshRepository = refreshRepository;
+        this.withdrawRepository = withdrawRepository;
     }
 
     @Override
@@ -60,6 +68,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String password = loginDto.getPassword();
 
         log.info("[LoginFilter] user {}의 authentication 얻기 위한 시도", username);
+
+        Member member = memberRepository.findByUserLogin(username);
+        Optional<Withdraw> withdraw = withdrawRepository.findByUserId(member);
+        if (withdraw.isPresent()) {
+            log.warn("[LoginFilter] 탈퇴한 User {}. Login 거부.", username);
+            throw new AuthenticationException("탈퇴한 계정입니다.") {};
+        }
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
 
