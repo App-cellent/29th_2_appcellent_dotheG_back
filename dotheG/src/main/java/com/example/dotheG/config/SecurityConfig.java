@@ -1,10 +1,17 @@
 package com.example.dotheG.config;
 
 
+
 import com.example.dotheG.config.jwt.*;
-import com.example.dotheG.repository.RefreshRepository;
 import com.example.dotheG.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import com.example.dotheG.config.jwt.JwtFilter;
+import com.example.dotheG.config.jwt.LoginFilter;
+import com.example.dotheG.config.jwt.JwtUtil;
+import com.example.dotheG.config.jwt.CustomLogoutFilter;
+import com.example.dotheG.repository.MemberRepository;
+import com.example.dotheG.repository.RefreshRepository;
+import com.example.dotheG.repository.WithdrawRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,7 +63,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, RefreshRepository refreshRepository) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, RefreshRepository refreshRepository, WithdrawRepository withdrawRepository, MemberRepository memberRepository) throws Exception {
 
         http
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
@@ -102,8 +109,8 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/users/signup", "/login", "/").permitAll()
-                        .requestMatchers("/steps/test").hasRole("USER")
+                        .requestMatchers("/users/signup", "/login", "/", "users/check-userlogin", "/users/check-username").permitAll()
+                        .requestMatchers("/**").hasRole("USER")
                         .requestMatchers("/users/reissue").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -113,7 +120,7 @@ public class SecurityConfig {
         http
                 .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, memberRepository,refreshRepository, withdrawRepository), UsernamePasswordAuthenticationFilter.class);
         http
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
 

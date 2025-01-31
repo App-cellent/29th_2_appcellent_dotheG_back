@@ -35,4 +35,5 @@ public class Quiz {
     @ElementCollection
     @Column(length = 1000)
     private List<String> quizText;
+    
 }

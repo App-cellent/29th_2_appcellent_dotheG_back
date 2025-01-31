@@ -11,11 +11,13 @@ import com.example.dotheG.repository.MemberInfoRepository;
 import com.example.dotheG.repository.MemberQuizRepository;
 import com.example.dotheG.repository.MemberRepository;
 import com.example.dotheG.repository.StepRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class MemberService {
 
@@ -36,6 +38,7 @@ public class MemberService {
     }
 
     public void SignUp(MemberDto memberDto) {
+        log.info("회원가입 요청한 userLogin: {}", memberDto.getUserLogin());
 
         String userName = memberDto.getUserName();
         String userLogin = memberDto.getUserLogin();
@@ -44,12 +47,14 @@ public class MemberService {
         Boolean isExist = memberRepository.existsByUserLogin(userLogin);
 
         if (isExist) {
+            log.warn("이미 존재하는 사용자 회원가입 시도");
             throw new CustomException(ErrorCode.ID_DUPLICATED);
         }
 
         Member member = new Member(userName, userLogin, bCryptPasswordEncoder.encode(userPassword), true, false, "ROLE_USER", true, false);
 
         memberRepository.save(member);
+        log.info("회원 정보 DB 저장 완료 userLogin: {}", userLogin);
 
         MemberInfo memberInfo = new MemberInfo(member);
         memberInfoRepository.save(memberInfo);
@@ -59,7 +64,16 @@ public class MemberService {
 
         MemberQuiz memberQuiz = new MemberQuiz(member);
         memberQuizRepository.save(memberQuiz);
+    }
 
+    public boolean checkUserLogin(String userLogin) {
+        log.info("중복확인한 아이디: {}", userLogin);
+        return !memberRepository.existsByUserLogin(userLogin);
+    }
+
+    public boolean checkUserName(String userName) {
+        log.info("중복확인한 사용자 이름: {}", userName);
+        return !memberRepository.existsByUserName(userName);
     }
 
     public Member getCurrentMember(){

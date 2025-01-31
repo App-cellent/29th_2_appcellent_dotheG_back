@@ -1,6 +1,6 @@
 package com.example.dotheG.controller;
 
-import com.example.dotheG.dto.QuizResponseDto;
+import com.example.dotheG.dto.quiz.QuizResponseDto;
 import com.example.dotheG.dto.Response;
 import com.example.dotheG.service.QuizService;
 import org.springframework.web.bind.annotation.*;

@@ -15,12 +15,6 @@ public interface MemberCharacterRepository extends JpaRepository<MemberCharacter
     @Query("SELECT mc FROM MemberCharacter mc WHERE mc.userInfoId.userId.userId = :userId")
     List<MemberCharacter> findByUserInfoId_UserId(@Param("userId") Long userId);
 
-    // 특정 사용자의 특정 희귀도 캐릭터 조회
-    @Query("SELECT mc FROM MemberCharacter mc WHERE mc.userInfoId.userId.userId = :userId AND mc.charId.charRarity = :rarity")
-    List<MemberCharacter> findByUserInfoId_UserIdAndCharId_CharRarity(
-            @Param("userId") Long userId,
-            @Param("rarity") Integer rarity);
-
     // 특정 사용자가 특정 캐릭터 보유했는지 확인
     boolean existsByUserInfoIdAndCharId(MemberInfo userInfoId, Character charId);
 }
