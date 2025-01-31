@@ -21,9 +21,10 @@ public class ActivityController {
 
     // OpenCV 사용 (사진 분석)
     @GetMapping("/analyze")
-    public Response<Long> analyzePhoto(@RequestPart("activityImage") MultipartFile activityImage){
+    public Response<Long> analyzePhoto(@RequestPart("activityImage") MultipartFile activityImage,
+                                       @RequestParam Long activityId){
         try {
-            return Response.success("이미지 분석", activityService.analyzePhoto(activityImage));
+            return Response.success("이미지 분석", activityService.analyzePhoto(activityImage, activityId));
         } catch (Exception e){
             return Response.fail("이미지 분석 실패 " + HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -33,8 +34,8 @@ public class ActivityController {
     // [이미지, 활동 명, 날짜] 저장되어야 함 + 리워드 지급 받아야 함
     @PostMapping("/certification")
     public Response<Objects> requestImage(
-            @RequestPart(value = "activityImage", required = false) MultipartFile activityImage) {
-        activityService.requestImage(activityImage);
+            @RequestPart(value = "activityImage") MultipartFile activityImage, @RequestParam Long activityId) {
+        activityService.requestImage(activityImage, activityId);
         return Response.success("퀘스트 등록", null);
     }
 
