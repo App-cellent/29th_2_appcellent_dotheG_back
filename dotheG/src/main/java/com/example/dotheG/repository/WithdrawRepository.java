@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface WithdrawRepository extends JpaRepository<Withdraw, Long> {
     Optional<Withdraw> findByUserId(Member userId);
+
+
 }
