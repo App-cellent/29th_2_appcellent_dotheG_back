@@ -251,7 +251,7 @@ public class ReportService {
         double carbonReduction = (monthlyTotalSteps / 1000.0) * 150;
 
         // 지킨 나무 수 계산 (탄소 절감량 / 22000g)
-        double treesSaved = Math.round((carbonReduction / 22000) * 100.0) / 100.0;
+        double treesSaved = Math.round((carbonReduction / 220000) * 100.0) / 100.0;
 
         // 보고서 월 계산 (몇 년 몇 월)
         String reportMonth = String.format("%d년 %d월", firstDayOfLastMonth.getYear(), firstDayOfLastMonth.getMonthValue());
