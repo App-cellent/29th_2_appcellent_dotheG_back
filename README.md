@@ -1,5 +1,5 @@
 # 프로젝트 소개
-DotheG; do the Green
+DotheG: do the Green
 
 친환경 활동도 게임처럼, 캐릭터 수집으로 만드는 나만의 Eco-Life!
 
