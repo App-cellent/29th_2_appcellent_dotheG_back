@@ -33,8 +33,8 @@ import java.util.Collections;
 @Slf4j
 public class SecurityConfig {
 
-    @Value("${server_ip}")
-    private String serverIp;
+    @Value("${server.address}")
+    private String serverAddress;
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtUtil jwtUtil;
@@ -70,7 +70,7 @@ public class SecurityConfig {
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
                         //프론트 주소
-                        config.setAllowedOrigins(Collections.singletonList(serverIp));
+                        config.setAllowedOrigins(Collections.singletonList(serverAddress));
                         //모든 요청 허용(GET, POST ... )
                         config.setAllowedMethods(Collections.singletonList("*"));
                         config.setAllowCredentials(true);
