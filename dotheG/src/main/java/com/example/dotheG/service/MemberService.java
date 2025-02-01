@@ -43,6 +43,7 @@ public class MemberService {
         String userName = memberDto.getUserName();
         String userLogin = memberDto.getUserLogin();
         String userPassword = memberDto.getUserPassword();
+        String email = memberDto.getEmail();
 
         Boolean isExist = memberRepository.existsByUserLogin(userLogin);
 
@@ -51,7 +52,7 @@ public class MemberService {
             throw new CustomException(ErrorCode.ID_DUPLICATED);
         }
 
-        Member member = new Member(userName, userLogin, bCryptPasswordEncoder.encode(userPassword), true, false, "ROLE_USER", true, false);
+        Member member = new Member(userName, userLogin, bCryptPasswordEncoder.encode(userPassword),true, false, "ROLE_USER", email,true, false);
 
         memberRepository.save(member);
         log.info("회원 정보 DB 저장 완료 userLogin: {}", userLogin);

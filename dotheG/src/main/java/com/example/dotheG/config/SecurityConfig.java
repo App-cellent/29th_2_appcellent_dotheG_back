@@ -1,17 +1,17 @@
 package com.example.dotheG.config;
 
 
-import com.example.dotheG.config.jwt.JwtFilter;
-import com.example.dotheG.config.jwt.LoginFilter;
-import com.example.dotheG.config.jwt.JwtUtil;
-import com.example.dotheG.config.jwt.CustomLogoutFilter;
+import com.example.dotheG.config.jwt.*;
 import com.example.dotheG.repository.MemberRepository;
 import com.example.dotheG.repository.RefreshRepository;
 import com.example.dotheG.repository.WithdrawRepository;
+import com.example.dotheG.service.CustomOAuth2UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,14 +19,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Collections;
-import java.util.List;
 
 
 @Configuration
@@ -34,14 +33,21 @@ import java.util.List;
 @Slf4j
 public class SecurityConfig {
 
+    @Value("${server_ip}")
+    private String serverIp;
+
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtUtil jwtUtil;
     private final RefreshRepository refreshRepository;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomSuccessHandler customSuccessHandler;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtUtil jwtUtil, RefreshRepository refreshRepository) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtUtil jwtUtil, RefreshRepository refreshRepository, CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.customSuccessHandler = customSuccessHandler;
     }
 
     @Bean
@@ -59,7 +65,23 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, RefreshRepository refreshRepository, WithdrawRepository withdrawRepository, MemberRepository memberRepository) throws Exception {
 
         http
-                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfiguration()))
+                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                        CorsConfiguration config = new CorsConfiguration();
+                        //프론트 주소
+                        config.setAllowedOrigins(Collections.singletonList(serverIp));
+                        //모든 요청 허용(GET, POST ... )
+                        config.setAllowedMethods(Collections.singletonList("*"));
+                        config.setAllowCredentials(true);
+                        config.setAllowedHeaders(Collections.singletonList("*"));
+                        config.setMaxAge(60*60*60*36L);
+                        //우리쪽에서 데이터 줄 경우, cookie와 authorization을 expose 해줘야 프론트에서 획득 가능
+                        config.setExposedHeaders(Collections.singletonList("Set-Cookie"));
+                        config.setExposedHeaders(Collections.singletonList("authorization"));
+                        return config;
+                    }
+                }))
 
                 .csrf((auth) -> auth.disable());
 
@@ -70,11 +92,25 @@ public class SecurityConfig {
                 .httpBasic((auth) -> auth.disable());
 
         http
+                .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+        http
+                .oauth2Login((oauth2) -> oauth2
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService))
+                        .successHandler(customSuccessHandler)
+                );
+
+        http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/users/signup", "/login", "/", "users/check-userlogin", "/users/check-username").permitAll()
                         .requestMatchers("/**").hasRole("USER")
                         .requestMatchers("/users/reissue").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                );
         http
                 .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
         http
