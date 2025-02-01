@@ -49,15 +49,15 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("로그인 인증 성공한 user: {}", username);
 
          //JSON 응답을 만들어 클라이언트로 전송
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("{\"token\":\"" + access + "\"}");
+//        response.setContentType("application/json");
+//        response.setCharacterEncoding("UTF-8");
+//        response.getWriter().write("{\"token\":\"" + access + "\"}");
 
 
-        //response.setHeader("access", access);
+        response.setHeader("access", access);
         //쿠키 방식으로 토큰 생성
         response.addCookie(createCookie("refresh", refresh));
-        //response.setStatus(HttpStatus.OK.value());
+        response.setStatus(HttpStatus.OK.value());
 //        response.sendRedirect("dotheg://oauth/callback");
         log.info("토큰 생성 완");
     }
