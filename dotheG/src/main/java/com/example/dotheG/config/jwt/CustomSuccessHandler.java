@@ -54,7 +54,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        response.getWriter().write("{\"token\":\"" + access + "\"}");
 
 
-        response.setHeader("access", access);
+        response.addHeader("access", access);
         //쿠키 방식으로 토큰 생성
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
