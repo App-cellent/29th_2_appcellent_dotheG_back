@@ -12,7 +12,7 @@ import java.util.List;
 public interface MemberCharacterRepository extends JpaRepository<MemberCharacter, Long> {
 
     // 특정 사용자의 모든 캐릭터 조회
-    @Query("SELECT mc FROM MemberCharacter mc WHERE mc.userInfoId.userId.userId = :userId")
+    @Query("SELECT mc FROM MemberCharacter mc WHERE mc.userInfoId.userInfoId = :userId")
     List<MemberCharacter> findByUserInfoId_UserId(@Param("userId") Long userId);
 
     // 특정 사용자가 특정 캐릭터 보유했는지 확인
