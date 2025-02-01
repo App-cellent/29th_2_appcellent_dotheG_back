@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+
+@Slf4j
 @Component
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
@@ -42,14 +45,19 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         addRefreshToken(username, refresh, 86400000L);
 
-        // JSON 응답을 만들어 클라이언트로 전송
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("{\"token\":\"" + access + "\"}");
+        log.info("로그인 인증 성공한 user: {}", username);
 
+        // JSON 응답을 만들어 클라이언트로 전송
+//        response.setContentType("application/json");
+//        response.setCharacterEncoding("UTF-8");
+//        response.getWriter().write("{\"token\":\"" + access + "\"}");
+
+
+        response.setHeader("access", access);
         //쿠키 방식으로 토큰 생성
-        response.addCookie(createCookie("refreshToken", refresh));
+        response.addCookie(createCookie("refresh", refresh));
 //        response.sendRedirect("dotheg://oauth/callback");
+        log.info("토큰 생성 완");
     }
 
     private void addRefreshToken(String username, String refreshToken, Long expirationMS) {
