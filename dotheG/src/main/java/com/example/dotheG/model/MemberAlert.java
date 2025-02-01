@@ -2,11 +2,15 @@ package com.example.dotheG.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class MemberAlert {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,18 +21,25 @@ public class MemberAlert {
     @JoinColumn(name = "USER_ID")
     private Member userId;
 
-    @ManyToOne
-    @JoinColumn(name = "ALERT_ID")
-    private Alert alertId;
+    private String title;
 
-    //private String content;
+    private String content;
 
     private boolean isRead;
 
-    private Timestamp sendTime;
+    private LocalDateTime sendTime;
 
     public void updateIsRead() {
         this.isRead = true;
+    }
+
+    public MemberAlert(Member member, String title, String content, LocalDateTime sendTime) {
+        this.userId = member;
+        this.title = title;
+        this.content = content;
+        this.isRead = false;
+        this.sendTime = sendTime;
+
     }
 
 }
