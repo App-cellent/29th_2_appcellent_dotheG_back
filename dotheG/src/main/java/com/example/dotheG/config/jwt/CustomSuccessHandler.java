@@ -1,5 +1,7 @@
 package com.example.dotheG.config.jwt;
 import com.example.dotheG.dto.oAuth2.CustomOAuth2User;
+import com.example.dotheG.model.Refresh;
+import com.example.dotheG.repository.RefreshRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,8 +21,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //    private String redirectUri;
 
     private final JwtUtil jwtUtil;
-    public CustomSuccessHandler(JwtUtil jwtUtil) {
+    private final RefreshRepository refreshRepository;
+
+    public CustomSuccessHandler(JwtUtil jwtUtil, RefreshRepository refreshRepository) {
         this.jwtUtil = jwtUtil;
+        this.refreshRepository = refreshRepository;
     }
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -31,15 +36,31 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority grantedAuthority = iterator.next();
         String role = grantedAuthority.getAuthority();
-        String token = jwtUtil.createToken("authorization", username, role, 600000*36L);
+
+        String access = jwtUtil.createToken("access", username, role, 600000*36L);
+        String refresh = jwtUtil.createToken("refresh", username, role, 86400000L);
+
+        addRefreshToken(username, refresh, 86400000L);
+
         // JSON 응답을 만들어 클라이언트로 전송
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("{\"token\":\"" + token + "\"}");
+        response.getWriter().write("{\"token\":\"" + access + "\"}");
 
         //쿠키 방식으로 토큰 생성
-//        response.addCookie(createCookie("authorization", token));
+        response.addCookie(createCookie("refreshToken", refresh));
 //        response.sendRedirect("dotheg://oauth/callback");
+    }
+
+    private void addRefreshToken(String username, String refreshToken, Long expirationMS) {
+        long expirationTime = System.currentTimeMillis() + expirationMS;
+        Refresh refreshEntity = Refresh.builder()
+                .userLogin(username)
+                .refresh(refreshToken)
+                .expiration(Long.toString(expirationTime))
+                .build();
+
+        refreshRepository.save(refreshEntity);
     }
     //쿠키 생성 메소드
     private Cookie createCookie(String key, String value) {
