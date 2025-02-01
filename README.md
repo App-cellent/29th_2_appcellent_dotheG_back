@@ -3,7 +3,7 @@ DotheG; do the Green
 
 친환경 활동도 게임처럼, 캐릭터 수집으로 만드는 나만의 Eco-Life!
 
-<img src="C:\Users\노영서\OneDrive\문서\카카오톡 받은 파일\KakaoTalk_20250116_154537671.png" width="120"/>
+<img src="https://github.com/user-attachments/assets/0f2b0823-5b82-42a6-99c1-287ac3d733df" width="120"/>
 
 
 # Backend
