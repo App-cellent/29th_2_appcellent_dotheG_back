@@ -6,13 +6,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsMvcConfig implements WebMvcConfigurer {
 
-    @Value("${server.address}")
-    private String serverAddress;
+//    @Value("${server.address}")
+//    private String serverAddress;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .exposedHeaders("Set-Cookie")
-                .allowedOrigins(serverAddress);
+                .allowedOrigins("http://localhost:8081");
     }
 }
