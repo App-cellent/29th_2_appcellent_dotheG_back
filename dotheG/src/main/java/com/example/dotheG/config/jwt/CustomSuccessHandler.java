@@ -7,13 +7,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 @Slf4j
@@ -56,16 +57,17 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.setHeader("access", access);
         //쿠키 방식으로 토큰 생성
         response.addCookie(createCookie("refresh", refresh));
+        response.setStatus(HttpStatus.OK.value());
 //        response.sendRedirect("dotheg://oauth/callback");
         log.info("토큰 생성 완");
     }
 
-    private void addRefreshToken(String username, String refreshToken, Long expirationMS) {
-        long expirationTime = System.currentTimeMillis() + expirationMS;
+    private void addRefreshToken(String username, String refreshToken, Long expiredMs) {
+        Date date = new Date(System.currentTimeMillis() + expiredMs);
         Refresh refreshEntity = Refresh.builder()
                 .userLogin(username)
                 .refresh(refreshToken)
-                .expiration(Long.toString(expirationTime))
+                .expiration(date.toString())
                 .build();
 
         refreshRepository.save(refreshEntity);
