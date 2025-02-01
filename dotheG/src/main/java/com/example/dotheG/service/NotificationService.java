@@ -1,6 +1,7 @@
 package com.example.dotheG.service;
 
 import com.example.dotheG.dto.notification.MemberAlertListResponseDto;
+import com.example.dotheG.dto.notification.MemberAlertRequestDto;
 import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.model.Member;
 import com.example.dotheG.model.MemberAlert;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +36,7 @@ public class NotificationService {
         List<MemberAlertListResponseDto> memberAlertListResponseDtos = memberAlertList.stream()
                 .map(memberAlert -> new MemberAlertListResponseDto(
                         memberAlert.getUserAlertId(),
-                        memberAlert.getAlertId().getAlertContent(),
+                        memberAlert.getContent(),
                         memberAlert.isRead(), // 읽음 여부 같이 반환
                         memberAlert.getSendTime()))
                 .collect(Collectors.toList());
@@ -58,7 +60,19 @@ public class NotificationService {
         memberAlertRepository.save(memberAlert);
     }
 
-    // TODO isNoti가 false인 사람에게는 알람전송 x
+    /// 알람 저장
+    @Transactional
+    public void saveMemberAlert(MemberAlertRequestDto requestDto) {
+
+        Member member = memberService.getCurrentMember();
+
+        MemberAlert memberAlert = new MemberAlert(
+                member,
+                requestDto.getTitle(),
+                requestDto.getMessage(),
+                LocalDateTime.now());
+        memberAlertRepository.save(memberAlert);
+    }
 
 
 
