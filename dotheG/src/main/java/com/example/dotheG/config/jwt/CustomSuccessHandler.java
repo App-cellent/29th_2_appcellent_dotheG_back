@@ -41,10 +41,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority grantedAuthority = iterator.next();
         String role = grantedAuthority.getAuthority();
 
-        String access = jwtUtil.createToken("access", username, role, 600000*36L);
-        String refresh = jwtUtil.createToken("refresh", username, role, 86400000L);
-
-        addRefreshToken(username, refresh, 86400000L);
+        String token = jwtUtil.createToken("authorization", username, role, 600000*36L);
+//        String access = jwtUtil.createToken("access", username, role, 600000*36L);
+//        String refresh = jwtUtil.createToken("refresh", username, role, 86400000L);
+//
+//        addRefreshToken(username, refresh, 86400000L);
 
         log.info("로그인 인증 성공한 user: {}", username);
 
@@ -54,12 +55,16 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        response.getWriter().write("{\"token\":\"" + access + "\"}");
 
 
-        response.addHeader("access", access);
+        //response.setHeader("access", access);
+
         //쿠키 방식으로 토큰 생성
-        response.addCookie(createCookie("refresh", refresh));
-        response.setStatus(HttpStatus.OK.value());
+        //response.addCookie(createCookie("refresh", refresh));
+//        response.setStatus(HttpStatus.OK.value());
 //        response.sendRedirect("dotheg://oauth/callback");
-        log.info("토큰 생성 완");
+
+        response.addCookie(createCookie("authorization", token));
+        response.sendRedirect("http://15.165.210.30:8083/login/oauth2/code/naver");
+        log.info("토큰 생성 완 및 리디렉션 완료");
     }
 
     private void addRefreshToken(String username, String refreshToken, Long expiredMs) {
