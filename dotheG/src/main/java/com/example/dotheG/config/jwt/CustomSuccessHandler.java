@@ -34,7 +34,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String token = jwtUtil.createToken("authorization", username, role, 600000*36L);
         //쿠키 방식으로 토큰 생성
         response.addCookie(createCookie("authorization", token));
-        response.sendRedirect("http://localhost:8081/mainpage/getInfo");
+        response.sendRedirect("dotheg://oauth/callback");
     }
     //쿠키 생성 메소드
     private Cookie createCookie(String key, String value) {
