@@ -35,26 +35,14 @@ DotheG: do the Green
 │      └─example
 │          └─dotheG
 │              ├─config
-│              │  ├─nnnnnn
-│              │  └─mmm
+│              │  ├─jwt
+│              │  └─scheduler
 │              ├─controller
-│              │  ├─nnnnnn
-│              │  └─mmm
 │              ├─dto
-│              │  ├─nnnnnn
-│              │  └─mmm
 │              ├─exception
-│              │  ├─nnnnnn
-│              │  └─mmm
 │              ├─model
-│              │  ├─nnnnnn
-│              │  └─mmm
 │              ├─repository
-│              │  ├─nnnnnn
-│              │  └─mmm
 │              ├─service
-│              │  ├─nnnnnn
-│              │  └─mmm
 │              └─DotheGApplication.java
 └─resources
     └─application.properties
