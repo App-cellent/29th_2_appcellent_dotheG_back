@@ -2,6 +2,7 @@ package com.example.dotheG.controller;
 
 import com.example.dotheG.dto.Response;
 import com.example.dotheG.dto.notification.MemberAlertListResponseDto;
+import com.example.dotheG.dto.notification.MemberAlertRequestDto;
 import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.service.NotificationService;
@@ -24,14 +25,17 @@ public class NotificationController {
     }
 
     // 알람 상세 목록 조회(읽음처리)
-    // TODO 알람 상세 내용도 반환해야할지? 목록에서 내용 다보여주고, 여기서는 읽음처리만 할지?
     @GetMapping("/{userAlertId}")
     public Response<?> getNotificationInfo(@PathVariable Long userAlertId) {
         notificationService.getNotification(userAlertId);
         return Response.success("알람 상세 조회",null);
     }
 
-
+    @PostMapping
+    public Response<?> saveNotification(@RequestBody MemberAlertRequestDto requestDto) {
+        notificationService.saveMemberAlert(requestDto);
+        return Response.success("알람 저장 성공", null);
+    }
 
     // 2주지난 알람은 자동삭제 TODO 스케쥴러 사용
     // 매월 1일 10시 월간 성과보고서 알람 -> 전체 TODO 스케쥴러 사용

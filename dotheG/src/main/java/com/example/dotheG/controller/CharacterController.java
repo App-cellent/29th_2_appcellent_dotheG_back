@@ -27,10 +27,9 @@ public class CharacterController {
     // 캐릭터 도감 조회
     @GetMapping("/collection")
     public Response<List<CharacterDto>> getCharacterCollection(
-            @RequestParam Long userId,
             @RequestParam(required = false, defaultValue = "ALL") String viewType
     ) {
-        List<CharacterDto> characters = characterService.getCharacterCollection(userId, viewType);
+        List<CharacterDto> characters = characterService.getCharacterCollection(viewType);
         return Response.success("캐릭터 도감 조회 성공", characters);
     }
 
@@ -42,7 +41,7 @@ public class CharacterController {
     }
 
     // 대표 캐릭터 지정
-    @PostMapping("/main/set")
+    @PutMapping("/main/set")
     public Response<String> setMainCharacter(@RequestBody SetMainCharacterDto request) {
         characterService.setMainCharacter(request.getCharacterId());
         return Response.success("대표 캐릭터 지정 성공", null);
@@ -50,8 +49,8 @@ public class CharacterController {
 
     // 대표 캐릭터 조회
     @GetMapping("/main")
-    public Response<MainCharacterResponseDto> getMainCharacter(@RequestParam Long userId) {
-        MainCharacterResponseDto mainCharacter = characterService.getMainCharacter(userId);
+    public Response<MainCharacterResponseDto> getMainCharacter() {
+        MainCharacterResponseDto mainCharacter = characterService.getMainCharacter();
         return Response.success("대표 캐릭터 조회 성공", mainCharacter);
     }
 

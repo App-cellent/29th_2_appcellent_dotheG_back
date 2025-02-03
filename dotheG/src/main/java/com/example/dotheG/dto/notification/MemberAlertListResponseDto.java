@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -17,6 +18,6 @@ public class MemberAlertListResponseDto {
     // 읽음 여부
     private boolean isRead;
     // 받은 시각
-    private Timestamp timestamp;
+    private LocalDateTime timestamp;
 
 }

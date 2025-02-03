@@ -8,7 +8,7 @@ import lombok.Getter;
 public class MainCharacterResponseDto {
     private Long characterId;
     private String characterName;
-    private int characterRarity;
+    private Integer characterRarity;
     private String characterImageUrl;
     private int userReward;
 }

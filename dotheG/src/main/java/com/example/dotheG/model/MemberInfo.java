@@ -17,7 +17,6 @@ public class MemberInfo {
     @JoinColumn(name = "USER_ID")
     private Member userId;
 
-    @Column(columnDefinition = "integer default 20")
     private int userReward;
 
     private Long mainChar;
@@ -35,7 +34,7 @@ public class MemberInfo {
     @Builder
     public MemberInfo(Member userId) {
         this.userId = userId;
-        this.userReward = 20;
+        this.userReward = 25;
         this.mainChar = null;
     }
 }

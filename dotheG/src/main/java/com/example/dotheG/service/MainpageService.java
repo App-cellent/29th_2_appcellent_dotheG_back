@@ -41,6 +41,7 @@ public class MainpageService {
         Activity specialActivity = activityRepository.findRandomActivity(11, 20);
 
         return new MainpageResponseDto(
+                member.getUserName(),
                 memberInfo.getUserReward(),
                 memberInfo.getMainChar(),
                 monthSavedTree,
@@ -48,6 +49,11 @@ public class MainpageService {
                 dailyActivity.getActivityId(),
                 specialActivity.getActivityId()
         );
+    }
+
+    public boolean getTutorial(){
+        Member member = memberService.getCurrentMember();
+        return member.isTutorial();
     }
 
     @Transactional
@@ -58,6 +64,6 @@ public class MainpageService {
 
     // {나의 탄소 절감량}/22,000g  (소수 두 번째자리에서 반올림)
     private double calculateSavedTree(double savedCarbon) {
-        return Math.round((savedCarbon / 220) * 100 ) / 100.0; // 소수점 두 번째 자리 반올림
+        return Math.round((savedCarbon / 22) * 100 ) / 100.0; // 소수점 두 번째 자리 반올림
     }
 }

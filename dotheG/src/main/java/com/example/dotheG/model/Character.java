@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
+@Table(name = "dotheg_character")
 public class Character {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

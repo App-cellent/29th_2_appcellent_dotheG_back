@@ -10,4 +10,5 @@ public class CharacterDto {
     private String charName;
     private int charRarity;
     private String charImageUrl;
+    private boolean owned; // 소유 여부
 }

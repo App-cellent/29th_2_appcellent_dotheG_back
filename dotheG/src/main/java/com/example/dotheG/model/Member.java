@@ -25,19 +25,22 @@ public class Member {
 
     private String role;
 
-    private boolean isNoti;
+    private String email;
+
+    private boolean Noti;
 
     private boolean tutorial;
 
     @Builder
-    public Member(String userName, String userLogin ,String userPassword, boolean available, boolean isSocial, String role, boolean isNoti, boolean tutorial) {
+    public Member(String userName, String userLogin ,String userPassword, boolean available, boolean isSocial, String role, String email, boolean Noti, boolean tutorial) {
         this.userName = userName;
         this.userLogin = userLogin;
         this.userPassword = userPassword;
         this.available = available;
         this.isSocial = isSocial;
         this.role = role;
-        this.isNoti = isNoti;
+        this.email = email;
+        this.Noti = Noti;
         this.tutorial = tutorial;
     }
 
@@ -50,10 +53,16 @@ public class Member {
     }
 
     public void toggleNoti(){
-        this.isNoti = !this.isNoti;
+        this.Noti = !this.Noti;
     }
 
     public void changeTutorial(){
         this.tutorial = true;
+    }
+
+    //Role 추가?
+    public void updateSocialMember( String userName, String email) {
+        this.userName = userName;
+        this.email = email;
     }
 }

@@ -101,7 +101,7 @@ public class StepService {
     public double getCarbonReduction(int StepCount) {
         double temp = (StepCount / 1000.0) * 150;  // 1000보당 150g 절약
         double carbonReduction = temp / 1000.0;          // kg로 환산
-        return carbonReduction;
+        return Double.parseDouble(String.format("%.3f", carbonReduction));
     }
 
     // 만보기 목표달성시 리워드 지급(일일, 주간)

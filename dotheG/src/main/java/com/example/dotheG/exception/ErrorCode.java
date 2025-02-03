@@ -24,11 +24,11 @@ public enum ErrorCode {
     INSUFFICIENT_STEP_COUNT(HttpStatus.BAD_REQUEST, "걸음수가 부족합니다."),
     REWARD_ALREADY_GRANTED(HttpStatus.BAD_REQUEST, "이미 리워드가 지급되었습니다."),
     ACTIVITY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 활동이 등록되어있지 않습니다."),
-    MYACTIVITY_NOT_FOUND(HttpStatus.NOT_FOUND, "오늘 인증한 활동이 없습니다."),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "유효하지 않은 객체입니다."),
     NAME_NOT_WRITTEN(HttpStatus.BAD_REQUEST, "닉네임을 입력해 주세요."),
     NAME_FAILED(HttpStatus.UNPROCESSABLE_ENTITY, "길이에 맞는 닉네임을 입력해주세요."),
-    PASSWORD_DIFFERENT(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    PASSWORD_DIFFERENT(HttpStatus.BAD_REQUEST, "새로운 비밀번호가 일치하지 않습니다."),
+    CURRENT_PASSWORD_DIFFERENT(HttpStatus.BAD_REQUEST, "기존 비밀번호가 일치하지 않습니다."),
     WITHDRAW_ALREADY(HttpStatus.CONFLICT, "이미 탈퇴한 회원입니다."),
     REWARD_NOT_ENOUGH(HttpStatus.FORBIDDEN, "리워드가 부족합니다."),
     INCORRECT_DRAWTYPE(HttpStatus.BAD_REQUEST, "잘못된 뽑기 유형입니다."),
@@ -38,7 +38,9 @@ public enum ErrorCode {
     MAIN_CHARACTER_NOT_FOUND(HttpStatus.NOT_FOUND,"대표 캐릭터 정보가 존재하지 않습니다."),
     MISSING_USER_ID(HttpStatus.BAD_REQUEST,"userId가 누락되었습니다."),
     INVALID_VIEW_TYPE(HttpStatus.BAD_REQUEST, "잘못된 viewType 값입니다."),
-    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "주간 보고서가 존재하지 않습니다.");
+    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "주간 보고서가 존재하지 않습니다."),
+    TIME_RESTRICTION_WEEKLY(HttpStatus.FORBIDDEN, "주간 보고서를 조회할 수 있는 시간이 아닙니다."),
+    TIME_RESTRICTION_MONTHLY(HttpStatus.FORBIDDEN, "월간 보고서를 조회할 수 있는 시간이 아닙니다.");
 
     private final HttpStatus status;
     private final String message;

@@ -1,8 +1,11 @@
 package com.example.dotheG.service;
 
+import com.example.dotheG.dto.quiz.QuizResponseDto;
+import com.example.dotheG.dto.quiz.QuizSolDto;
 import com.example.dotheG.exception.CustomException;
 import com.example.dotheG.exception.ErrorCode;
 import com.example.dotheG.model.Member;
+import com.example.dotheG.model.MemberInfo;
 import com.example.dotheG.model.MemberQuiz;
 import com.example.dotheG.model.Quiz;
 import com.example.dotheG.repository.MemberQuizRepository;
@@ -43,12 +46,32 @@ public class QuizService {
         return memberQuiz.isSolved(); // 풀었으면 true 안풀었으면 false
     }
 
+    // 퀴즈 불러오기
+    public QuizResponseDto getQuiz() {
+        // 퀴즈 조회
+        Quiz quiz = quizRepository.findByQuizDate(LocalDate.now()).
+                orElseThrow(() -> new CustomException(ErrorCode.QUIZ_NOT_FOUND));
+
+        return new QuizResponseDto(
+                quiz.getQuizType(),
+                quiz.getQuizTitle(),
+                quiz.getQuizText()
+        );
+    }
+
     // 퀴즈 풀기
-    public boolean solve(String myAnswer){
+    public Object solve(String myAnswer){
         Member member = memberService.getCurrentMember();
+        MemberInfo memberInfo = memberService.getCurrentMemberInfo();
+
         // 퀴즈 조회
         Quiz quiz = quizRepository.findByQuizDate(LocalDate.now()).orElseThrow(() -> new CustomException(ErrorCode.QUIZ_NOT_FOUND));
         String quizAnswer = quiz.getQuizAnswer();
+
+        QuizSolDto quizSolDto = new QuizSolDto(
+                quiz.getQuizSol(),
+                quiz.getQuizSolImage()
+        );
 
         // 멤버퀴즈 조회
         Long memberId = member.getUserId();
@@ -56,13 +79,17 @@ public class QuizService {
                 .orElseThrow(() -> new CustomException(ErrorCode.TABLE_NOT_FOUND));
 
         // 정답 확인 및 상태 변경 : isSolved -> true 변경
-        // todo : 이거 왜 null, "", " " 넣어도 true를 반환하지
         if (myAnswer == null || myAnswer.isBlank()){
             throw new CustomException(ErrorCode.MYANSWER_NOT_FOUND);
-        } else {
-            memberQuiz.updateStatus(quiz, myAnswer.equals(quizAnswer), true);
+        } else if (myAnswer.equals(quizAnswer)){
+            memberInfo.addReward(2);
+            memberQuiz.updateStatus(quiz, true, true);
             memberQuizRepository.save(memberQuiz);
-            return myAnswer.equals(quizAnswer);
+            return "정답입니다.";
+        } else {
+            memberQuiz.updateStatus(quiz, false, true);
+            memberQuizRepository.save(memberQuiz);
+            return quizSolDto;
         }
     }
 }
